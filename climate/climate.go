@@ -125,19 +125,12 @@ func (c *ClientImpl) GetAnnualRainfall(ctx context.Context, args GetAnnualRainfa
 	return list, nil
 }
 
-// GetAveAnnualRainfall ...
-func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, toCCYY int64, countryISO string) (float64, error) {
-	args := GetAnnualRainfallArgs{
-		FromCCYY:   fmt.Sprintf("%d", fromCCYY),
-		ToCCYY:     fmt.Sprintf("%d", toCCYY),
-		CountryISO: countryISO,
-	}
-	list, err := c.GetAnnualRainfall(ctx, args)
+func (c *ClientImpl) calculateAveAnual(list List, fromCCYY, toCCYY int64) (decimal.Decimal, error) {
 	domainWebAnnualGcmDatum := list.DomainWebAnnualGcmDatum
 	totalAnualData := decimal.NewFromInt(0)
 	totalDatum := int64(len(domainWebAnnualGcmDatum))
 	if totalDatum < 1 {
-		return 0, fmt.Errorf("date range %d-%d not supported", fromCCYY, toCCYY)
+		return decimal.NewFromInt(0), fmt.Errorf("date range %d-%d not supported", fromCCYY, toCCYY)
 	}
 	totalDatumDec := decimal.NewFromInt(totalDatum)
 	for _, v := range domainWebAnnualGcmDatum {
@@ -148,6 +141,21 @@ func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, t
 		totalAnualData = totalAnualData.Add(anualData)
 	}
 	anualAve := totalAnualData.Div(totalDatumDec)
+	return anualAve, nil
+}
+
+// GetAveAnnualRainfall ...
+func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, toCCYY int64, countryISO string) (float64, error) {
+	args := GetAnnualRainfallArgs{
+		FromCCYY:   fmt.Sprintf("%d", fromCCYY),
+		ToCCYY:     fmt.Sprintf("%d", toCCYY),
+		CountryISO: countryISO,
+	}
+	list, err := c.GetAnnualRainfall(ctx, args)
+	if err != nil {
+		return 0, err
+	}
+	anualAve, err := c.calculateAveAnual(list, fromCCYY, toCCYY)
 	if err != nil {
 		return 0, err
 	}
