@@ -8,29 +8,31 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/shopspring/decimal"
 )
 
 // IClient interface
 type IClient interface {
 	NewGetRequest(ctx context.Context, url string) (*http.Request, error)
 	Do(r *http.Request, v interface{}) (*http.Response, error)
-	GetAveAnnualRainfall(ctx context.Context, args GetAveAnnualRainfallArgs) (List, error)
+	GetAnnualRainfall(ctx context.Context, args GetAnnualRainfallArgs) (List, error)
+	GetAveAnnualRainfall(ctx context.Context, fromCCYY, toCCYY, countryISO string) (float64, error)
 }
 
-// Client struct
-type Client struct {
+// ClientImpl struct
+type ClientImpl struct {
 	baseURL  string
 	validate *validator.Validate
 	http     *http.Client
 }
 
 // NewClient ...
-func NewClient(c *http.Client, validate *validator.Validate) *Client {
+func NewClient(c *http.Client, validate *validator.Validate) *ClientImpl {
 	if c == nil {
 		c = http.DefaultClient
 	}
 
-	return &Client{
+	return &ClientImpl{
 		http:     c,
 		validate: validate,
 		baseURL:  "http://climatedataapi.worldbank.org/climateweb/rest/v1",
@@ -38,7 +40,7 @@ func NewClient(c *http.Client, validate *validator.Validate) *Client {
 }
 
 // NewGetRequest ...
-func (c *Client) NewGetRequest(ctx context.Context, url string) (*http.Request, error) {
+func (c *ClientImpl) NewGetRequest(ctx context.Context, url string) (*http.Request, error) {
 	if len(url) == 0 {
 		return nil, errors.New("invalid empty-string url")
 	}
@@ -57,7 +59,7 @@ func (c *Client) NewGetRequest(ctx context.Context, url string) (*http.Request, 
 }
 
 // Do the request.
-func (c *Client) Do(r *http.Request, v interface{}) (*http.Response, error) {
+func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.http.Do(r)
 	if err != nil {
 		return nil, err
@@ -98,15 +100,15 @@ type List struct {
 	DomainWebAnnualGcmDatum []DomainWebAnnualGcmDatum `xml:"domain.web.AnnualGcmDatum"`
 }
 
-// GetAveAnnualRainfallArgs ...
-type GetAveAnnualRainfallArgs struct {
+// GetAnnualRainfallArgs ...
+type GetAnnualRainfallArgs struct {
 	FromCCYY   string `validate:"required,len=4"`
 	ToCCYY     string `validate:"required,len=4"`
 	CountryISO string `validate:"required,len=3"`
 }
 
-// GetAveAnnualRainfall ...
-func (c *Client) GetAveAnnualRainfall(ctx context.Context, args GetAveAnnualRainfallArgs) (List, error) {
+// GetAnnualRainfall ...
+func (c *ClientImpl) GetAnnualRainfall(ctx context.Context, args GetAnnualRainfallArgs) (List, error) {
 	err := c.validate.Struct(args)
 	if err != nil {
 		return List{}, err
@@ -121,4 +123,34 @@ func (c *Client) GetAveAnnualRainfall(ctx context.Context, args GetAveAnnualRain
 		return List{}, err
 	}
 	return list, nil
+}
+
+// GetAveAnnualRainfall ...
+func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, toCCYY int64, countryISO string) (float64, error) {
+	args := GetAnnualRainfallArgs{
+		FromCCYY:   fmt.Sprintf("%d", fromCCYY),
+		ToCCYY:     fmt.Sprintf("%d", toCCYY),
+		CountryISO: countryISO,
+	}
+	list, err := c.GetAnnualRainfall(ctx, args)
+	domainWebAnnualGcmDatum := list.DomainWebAnnualGcmDatum
+	totalAnualData := decimal.NewFromInt(0)
+	totalDatum := int64(len(domainWebAnnualGcmDatum))
+	if totalDatum < 1 {
+		return 0, fmt.Errorf("date range %d-%d not supported", fromCCYY, toCCYY)
+	}
+	totalDatumDec := decimal.NewFromInt(totalDatum)
+	for _, v := range domainWebAnnualGcmDatum {
+		anualData, err := decimal.NewFromString(v.AnnualData.Double)
+		if err != nil {
+			continue
+		}
+		totalAnualData = totalAnualData.Add(anualData)
+	}
+	anualAve := totalAnualData.Div(totalDatumDec)
+	if err != nil {
+		return 0, err
+	}
+	result, _ := anualAve.Float64()
+	return result, nil
 }

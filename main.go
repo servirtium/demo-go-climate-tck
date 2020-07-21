@@ -13,12 +13,7 @@ import (
 func main() {
 	validate := validator.New()
 	client := climate.NewClient(&http.Client{}, validate)
-	args := climate.GetAveAnnualRainfallArgs{
-		FromCCYY:   "1980",
-		ToCCYY:     "1999",
-		CountryISO: "GBR",
-	}
-	result, err := client.GetAveAnnualRainfall(context.Background(), args)
+	result, err := client.GetAveAnnualRainfall(context.Background(), 1980, 1999, "egy")
 	if err != nil {
 		log.Fatal(err)
 	}
