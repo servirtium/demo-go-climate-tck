@@ -27,7 +27,7 @@ type ClientImpl struct {
 }
 
 // NewClient ...
-func NewClient(c *http.Client, validate *validator.Validate) *ClientImpl {
+func NewClient(c *http.Client, validate *validator.Validate, baseURL string) *ClientImpl {
 	if c == nil {
 		c = http.DefaultClient
 	}
@@ -35,7 +35,7 @@ func NewClient(c *http.Client, validate *validator.Validate) *ClientImpl {
 	return &ClientImpl{
 		http:     c,
 		validate: validate,
-		baseURL:  "http://climatedataapi.worldbank.org/climateweb/rest/v1",
+		baseURL:  baseURL,
 	}
 }
 

@@ -12,7 +12,7 @@ import (
 
 func main() {
 	validate := validator.New()
-	client := climate.NewClient(&http.Client{}, validate)
+	client := climate.NewClient(&http.Client{}, validate, "http://climatedataapi.worldbank.org/climateweb/rest/v1")
 	result, err := client.GetAveAnnualRainfall(context.Background(), 1980, 1999, "egy")
 	if err != nil {
 		log.Fatal(err)
