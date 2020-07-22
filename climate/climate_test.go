@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -106,6 +107,45 @@ func (s *ClimateTestSuite) TestGetAnnualRainfall_Failed() {
 	)
 	result, err := s.client.GetAnnualRainfall(ctx, input)
 	s.Equal(expected, result)
+	s.NotNil(err)
+}
+
+func (s *ClimateTestSuite) TestCalculateAveAnual_Success() {
+	var (
+		list = List{
+			DomainWebAnnualGcmDatum: []DomainWebAnnualGcmDatum{
+				{
+					AnnualData: AnnualData{
+						Double: "10",
+					},
+				},
+				{
+					AnnualData: AnnualData{
+						Double: "11",
+					},
+				},
+			},
+		}
+		fromCCYY = int64(1980)
+		toCCYY   = int64(1990)
+		expected = decimal.NewFromFloat32(10.5)
+	)
+	result, err := s.client.calculateAveAnual(list, fromCCYY, toCCYY)
+	s.Equal(expected.String(), result.String())
+	s.Nil(err)
+}
+
+func (s *ClimateTestSuite) TestCalculateAveAnual_Failed() {
+	var (
+		list = List{
+			DomainWebAnnualGcmDatum: []DomainWebAnnualGcmDatum{},
+		}
+		fromCCYY = int64(1980)
+		toCCYY   = int64(1990)
+		expected = decimal.NewFromInt(0)
+	)
+	result, err := s.client.calculateAveAnual(list, fromCCYY, toCCYY)
+	s.Equal(result, expected)
 	s.NotNil(err)
 }
 
