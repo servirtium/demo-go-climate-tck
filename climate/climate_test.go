@@ -31,10 +31,13 @@ func anualAvgHandlerLocal(w http.ResponseWriter, r *http.Request) {
 	data, err := ioutil.ReadFile(fmt.Sprintf("./mock/%s_%s_%s.xml", fromCCYY, toCCYY, countryISO))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("Internal Server Error"))
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/xml")
 	_, _ = w.Write(data)
+	return
 }
 
 func anualAvgHandlerRemote(w http.ResponseWriter, r *http.Request) {
@@ -51,14 +54,19 @@ func anualAvgHandlerRemote(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("Internal Server Error"))
+		return
 	}
 	output, err := xml.MarshalIndent(list, "  ", "    ")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte("Internal Server Error"))
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/xml")
 	_, _ = w.Write([]byte(output))
+	return
 }
 
 type ClimateTestSuite struct {

@@ -1,14 +1,18 @@
 package climate
 
 import (
+	"bytes"
 	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
+	"text/template"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/kr/pretty"
 	"github.com/shopspring/decimal"
 )
 
@@ -59,11 +63,43 @@ func (c *ClientImpl) NewGetRequest(ctx context.Context, url string) (*http.Reque
 	return r.WithContext(ctx), nil
 }
 
+type recordData struct {
+	RequestMethod  string
+	RequestURLPath string
+	RequestHeader  map[string][]string
+	ResponseHeader map[string][]string
+}
+
+func (c *ClientImpl) record(r *http.Request, resp *http.Response) {
+	content, err := ioutil.ReadFile("./template.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	tmpl, err := template.New("template").Parse(string(content))
+	if err != nil {
+		log.Fatal(err)
+	}
+	buffer := new(bytes.Buffer)
+	data := recordData{
+		RequestMethod:  r.Method,
+		RequestURLPath: r.URL.Path,
+	}
+	tmpl.Execute(buffer, data)
+	file, err := os.Create("./mock/record.md")
+	if err != nil {
+		log.Fatal(err)
+	}
+	file, err = os.Create("./mock/record.md")
+	_, err = file.Write(buffer.Bytes())
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // Do the request.
 func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) {
-	pretty.Println(r, "request")
 	resp, err := c.http.Do(r)
-	pretty.Println(resp, "response")
+	c.record(r, resp)
 	if err != nil {
 		return nil, err
 	}
