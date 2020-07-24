@@ -37,9 +37,10 @@ func anualAvgHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type ClimateTestSuite struct {
+	client ClientImpl
 	suite.Suite
-	client     ClientImpl
-	serverMock *httptest.Server
+	remoteClient ClientImpl
+	serverMock   *httptest.Server
 }
 
 func TestClimateTestSuite(t *testing.T) {
@@ -53,6 +54,8 @@ func (s *ClimateTestSuite) SetupTest() {
 	// s.serverMock.URL = "http://climatedataapi.worldbank.org/climateweb/rest/v1"
 	client := NewClient(http.DefaultClient, validate, s.serverMock.URL)
 	s.client = *client
+	remoteClient := NewClient(http.DefaultClient, validate, "http://climatedataapi.worldbank.org/climateweb/rest/v1")
+	s.remoteClient = *remoteClient
 }
 
 func (s *ClimateTestSuite) TestNewClient_Success() {
@@ -61,23 +64,32 @@ func (s *ClimateTestSuite) TestNewClient_Success() {
 
 func (s *ClimateTestSuite) TestNewGetRequestWithRelativeURL_Success() {
 	var (
-		input    = "/country/annualavg/pr/1980/1999/GBR.xml"
-		expected = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
-		ctx      = context.Background()
+		input          = "/country/annualavg/pr/1980/1999/GBR.xml"
+		expected       = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
+		expectedRemote = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", "http://climatedataapi.worldbank.org/climateweb/rest/v1")
+		ctx            = context.Background()
 	)
 	r, err := s.client.NewGetRequest(ctx, input)
 	s.Equal(expected, r.URL.String())
+	s.Nil(err)
+	r, err = s.remoteClient.NewGetRequest(ctx, input)
+	s.Equal(expectedRemote, r.URL.String())
 	s.Nil(err)
 }
 
 func (s *ClimateTestSuite) TestNewGetRequestWithAbsoluteURL_Success() {
 	var (
-		input    = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
-		expected = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
-		ctx      = context.Background()
+		input          = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
+		expected       = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", s.serverMock.URL)
+		remoteInput    = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", "http://climatedataapi.worldbank.org/climateweb/rest/v1")
+		expectedRemote = fmt.Sprintf("%s/country/annualavg/pr/1980/1999/GBR.xml", "http://climatedataapi.worldbank.org/climateweb/rest/v1")
+		ctx            = context.Background()
 	)
 	r, err := s.client.NewGetRequest(ctx, input)
 	s.Equal(expected, r.URL.String())
+	s.Nil(err)
+	remoteRq, err := s.remoteClient.NewGetRequest(ctx, remoteInput)
+	s.Equal(expectedRemote, remoteRq.URL.String())
 	s.Nil(err)
 }
 
@@ -93,6 +105,9 @@ func (s *ClimateTestSuite) TestGetAnnualRainfall_Success() {
 	result, err := s.client.GetAnnualRainfall(ctx, input)
 	s.NotNil(result)
 	s.Nil(err)
+	result, err = s.remoteClient.GetAnnualRainfall(ctx, input)
+	s.NotNil(result)
+	s.Nil(err)
 }
 
 func (s *ClimateTestSuite) TestGetAnnualRainfall_Failed() {
@@ -106,6 +121,9 @@ func (s *ClimateTestSuite) TestGetAnnualRainfall_Failed() {
 		expected = List{}
 	)
 	result, err := s.client.GetAnnualRainfall(ctx, input)
+	s.Equal(expected, result)
+	s.NotNil(err)
+	result, err = s.remoteClient.GetAnnualRainfall(ctx, input)
 	s.Equal(expected, result)
 	s.NotNil(err)
 }
@@ -133,6 +151,9 @@ func (s *ClimateTestSuite) TestCalculateAveAnual_Success() {
 	result, err := s.client.calculateAveAnual(list, fromCCYY, toCCYY)
 	s.Equal(expected.String(), result.String())
 	s.Nil(err)
+	result, err = s.remoteClient.calculateAveAnual(list, fromCCYY, toCCYY)
+	s.Equal(expected.String(), result.String())
+	s.Nil(err)
 }
 
 func (s *ClimateTestSuite) TestCalculateAveAnual_Failed() {
@@ -147,6 +168,9 @@ func (s *ClimateTestSuite) TestCalculateAveAnual_Failed() {
 	result, err := s.client.calculateAveAnual(list, fromCCYY, toCCYY)
 	s.Equal(result, expected)
 	s.NotNil(err)
+	result, err = s.remoteClient.calculateAveAnual(list, fromCCYY, toCCYY)
+	s.Equal(result, expected)
+	s.NotNil(err)
 }
 
 func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
@@ -155,6 +179,9 @@ func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exist
 		expected = float64(988.8454972331014)
 	)
 	result, err := s.client.GetAveAnnualRainfall(ctx, 1980, 1999, "gbr")
+	s.Equal(expected, result)
+	s.Nil(err)
+	result, err = s.remoteClient.GetAveAnnualRainfall(ctx, 1980, 1999, "gbr")
 	s.Equal(expected, result)
 	s.Nil(err)
 }
@@ -167,6 +194,9 @@ func (s *ClimateTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists() {
 	result, err := s.client.GetAveAnnualRainfall(ctx, 1980, 1999, "fra")
 	s.Equal(expected, result)
 	s.Nil(err)
+	result, err = s.remoteClient.GetAveAnnualRainfall(ctx, 1980, 1999, "fra")
+	s.Equal(expected, result)
+	s.Nil(err)
 }
 
 func (s *ClimateTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists() {
@@ -175,6 +205,9 @@ func (s *ClimateTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists() {
 		expected = float64(54.58587712129825)
 	)
 	result, err := s.client.GetAveAnnualRainfall(ctx, 1980, 1999, "egy")
+	s.Equal(expected, result)
+	s.Nil(err)
+	result, err = s.remoteClient.GetAveAnnualRainfall(ctx, 1980, 1999, "egy")
 	s.Equal(expected, result)
 	s.Nil(err)
 }
@@ -187,6 +220,9 @@ func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesN
 	result, err := s.client.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
 	s.Equal(expected, result)
 	s.Error(err)
+	result, err = s.remoteClient.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
+	s.Equal(expected, result)
+	s.Error(err)
 }
 
 func (s *ClimateTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
@@ -195,6 +231,9 @@ func (s *ClimateTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNo
 		expected = float64(0)
 	)
 	result, err := s.client.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
+	s.Equal(expected, result)
+	s.Error(err)
+	result, err = s.remoteClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
 	s.Equal(expected, result)
 	s.Error(err)
 }

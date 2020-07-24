@@ -1,3 +1,39 @@
+## Interaction 0: GET /climateweb/rest/v1/country/annualavg/pr/1980/1999/gbr.xml
+
+### Request headers recorded for playback:
+
+```
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+User-Agent: Servirtium-Testing
+Connection: keep-alive
+Host: climatedataapi.worldbank.org
+```
+
+### Request body recorded for playback ():
+
+```
+
+```
+
+### Response headers recorded for playback:
+
+```
+Content-Type: application/xml
+Connection: keep-alive
+Set-Cookie: AWSALB=REPLACED-IN-RECORDING; Expires=Thu, 15 Jan 2099 11:11:11 GMT; Path=/
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: X-Requested-With
+Access-Control-Allow-Methods: GET
+Set-Cookie: TS01c35ec3=ONE-MORE-REPLACED-IN-RECORDING; Path=/
+Set-Cookie: climatedataapi.cookie=1234567899999; Path=/
+Set-Cookie: climatedataapi_ext.cookie=9876543211111; Path=/
+Set-Cookie: TS0137860d=ALSO-REPLACED-IN-RECORDING; Path=/
+Transfer-Encoding: chunked
+```
+
+### Response body recorded for playback (200: application/xml):
+
+```
 <list>
   <domain.web.AnnualGcmDatum>
     <gcm>bccr_bcm2_0</gcm>
@@ -5,7 +41,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>86.9453507501108</double>
+      <double>987.9504418944</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -14,7 +50,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>88.30762904406757</double>
+      <double>815.2627636718801</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -23,7 +59,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>106.36732833443784</double>
+      <double>1099.3898999037601</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -32,7 +68,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>28.62417012292162</double>
+      <double>1021.6996069333198</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -41,7 +77,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>45.26438762045865</double>
+      <double>1019.8750146478401</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -50,7 +86,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>26.459523922684326</double>
+      <double>1084.5603759764</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -59,7 +95,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>26.899282784094865</double>
+      <double>1008.2985131833999</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -68,7 +104,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>46.921809016059456</double>
+      <double>1194.9564575200002</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -77,7 +113,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>21.791464905471624</double>
+      <double>893.9680444336799</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -86,7 +122,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>78.83864541954053</double>
+      <double>1032.85460449136</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -95,7 +131,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>75.66823740260838</double>
+      <double>905.9324633786798</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -104,7 +140,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>31.494514729511625</double>
+      <double>1024.2805590819598</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -113,7 +149,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>35.64848946636978</double>
+      <double>784.5488305664002</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -122,7 +158,7 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>56.096262184318924</double>
+      <double>957.3522631840398</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
   <domain.web.AnnualGcmDatum>
@@ -131,7 +167,9 @@
     <fromYear>1980</fromYear>
     <toYear>1999</toYear>
     <annualData>
-      <double>63.461061116817845</double>
+      <double>1001.7526196294</double>
     </annualData>
   </domain.web.AnnualGcmDatum>
 </list>
+```
+
