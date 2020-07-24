@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/kr/pretty"
 	"github.com/shopspring/decimal"
 )
 
@@ -60,7 +61,9 @@ func (c *ClientImpl) NewGetRequest(ctx context.Context, url string) (*http.Reque
 
 // Do the request.
 func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) {
+	pretty.Println(r, "request")
 	resp, err := c.http.Do(r)
+	pretty.Println(resp, "response")
 	if err != nil {
 		return nil, err
 	}

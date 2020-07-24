@@ -2,6 +2,7 @@ package climate
 
 import (
 	"context"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -16,12 +17,12 @@ import (
 
 func serverMock() *httptest.Server {
 	r := mux.NewRouter()
-	r.HandleFunc("/country/annualavg/pr/{fromCCYY}/{toCCYY}/{countryISO}.xml", anualAvgHandler)
+	r.HandleFunc("/country/annualavg/pr/{fromCCYY}/{toCCYY}/{countryISO}.xml", anualAvgHandlerRemote)
 	srv := httptest.NewServer(r)
 	return srv
 }
 
-func anualAvgHandler(w http.ResponseWriter, r *http.Request) {
+func anualAvgHandlerLocal(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fromCCYY := vars["fromCCYY"]
 	toCCYY := vars["toCCYY"]
@@ -34,6 +35,30 @@ func anualAvgHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/xml")
 	_, _ = w.Write(data)
+}
+
+func anualAvgHandlerRemote(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fromCCYY := vars["fromCCYY"]
+	toCCYY := vars["toCCYY"]
+	countryISO := vars["countryISO"]
+	validate := validator.New()
+	client := NewClient(&http.Client{}, validate, "http://climatedataapi.worldbank.org/climateweb/rest/v1")
+	list, err := client.GetAnnualRainfall(r.Context(), GetAnnualRainfallArgs{
+		FromCCYY:   fromCCYY,
+		ToCCYY:     toCCYY,
+		CountryISO: countryISO,
+	})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	output, err := xml.MarshalIndent(list, "  ", "    ")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/xml")
+	_, _ = w.Write([]byte(output))
 }
 
 type ClimateTestSuite struct {
@@ -50,8 +75,6 @@ func TestClimateTestSuite(t *testing.T) {
 func (s *ClimateTestSuite) SetupTest() {
 	validate := validator.New()
 	s.serverMock = serverMock()
-	// Flag to ON/OFF for request real API and mock server API
-	// s.serverMock.URL = "http://climatedataapi.worldbank.org/climateweb/rest/v1"
 	client := NewClient(http.DefaultClient, validate, s.serverMock.URL)
 	s.client = *client
 	remoteClient := NewClient(http.DefaultClient, validate, "http://climatedataapi.worldbank.org/climateweb/rest/v1")
