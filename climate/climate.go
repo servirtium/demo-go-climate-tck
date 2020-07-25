@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/go-playground/validator/v10"
@@ -64,13 +65,31 @@ func (c *ClientImpl) NewGetRequest(ctx context.Context, url string) (*http.Reque
 }
 
 type recordData struct {
-	RequestMethod  string
-	RequestURLPath string
-	RequestHeader  map[string][]string
-	ResponseHeader map[string][]string
+	RequestMethod       string
+	RequestURLPath      string
+	RequestHeader       map[string][]string
+	RequestBody         string
+	ResponseHeader      map[string][]string
+	ResponseBody        string
+	ResponseStatus      string
+	ResponseContentType string
 }
 
-func (c *ClientImpl) record(r *http.Request, resp *http.Response) {
+func (c *ClientImpl) generateFileName(requestURLPath string) string {
+	params := strings.Split(requestURLPath, "/")
+	countryIndex := len(params) - 1
+	toCCYYIndex := len(params) - 2
+	fromCCYYIndex := len(params) - 3
+
+	countryISO := strings.ReplaceAll(params[countryIndex], ".xml", "")
+	fromCCYY := params[fromCCYYIndex]
+	toCCYY := params[toCCYYIndex]
+	fileName := fmt.Sprintf("./record/average_Rainfall_For_%s_From_%s_to_%s.md", countryISO, fromCCYY, toCCYY)
+	return fileName
+
+}
+
+func (c *ClientImpl) record(params recordData) {
 	content, err := ioutil.ReadFile("./template.tmpl")
 	if err != nil {
 		log.Fatal(err)
@@ -79,17 +98,25 @@ func (c *ClientImpl) record(r *http.Request, resp *http.Response) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	buffer := new(bytes.Buffer)
+
 	data := recordData{
-		RequestMethod:  r.Method,
-		RequestURLPath: r.URL.Path,
+		RequestMethod:       params.RequestMethod,
+		RequestURLPath:      params.RequestURLPath,
+		RequestHeader:       params.RequestHeader,
+		RequestBody:         params.RequestBody,
+		ResponseHeader:      params.ResponseHeader,
+		ResponseBody:        params.ResponseBody,
+		ResponseContentType: params.ResponseContentType,
+		ResponseStatus:      params.ResponseStatus,
 	}
+	fileName := c.generateFileName(params.RequestURLPath)
+	buffer := new(bytes.Buffer)
 	tmpl.Execute(buffer, data)
-	file, err := os.Create("./mock/record.md")
+	file, err := os.Create(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	file, err = os.Create("./mock/record.md")
+	file, err = os.Create(fileName)
 	_, err = file.Write(buffer.Bytes())
 	if err != nil {
 		log.Fatal(err)
@@ -98,8 +125,13 @@ func (c *ClientImpl) record(r *http.Request, resp *http.Response) {
 
 // Do the request.
 func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) {
+	// Clone Request Body
+	var reqBodyBytes []byte
+	if r.Body != nil {
+		reqBodyBytes, _ = ioutil.ReadAll(r.Body)
+	}
+	r.Body = ioutil.NopCloser(bytes.NewBuffer(reqBodyBytes))
 	resp, err := c.http.Do(r)
-	c.record(r, resp)
 	if err != nil {
 		return nil, err
 	}
@@ -107,12 +139,24 @@ func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) 
 	defer func() {
 		_ = resp.Body.Close()
 	}()
+	respBodyBytes, _ := ioutil.ReadAll(resp.Body)
+	c.record(recordData{
+		RequestURLPath:      r.URL.Path,
+		RequestMethod:       r.Method,
+		RequestHeader:       r.Header,
+		RequestBody:         string(reqBodyBytes),
+		ResponseHeader:      resp.Header,
+		ResponseBody:        string(respBodyBytes),
+		ResponseContentType: resp.Header.Get("Content-Type"),
+		ResponseStatus:      resp.Status,
+	})
+	// Clone resp body
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBodyBytes))
 	if v != nil {
 		if err = xml.NewDecoder(resp.Body).Decode(v); err != nil {
 			return nil, fmt.Errorf("unable to parse XML [%s %s]: %v", r.Method, r.URL.RequestURI(), err)
 		}
 	}
-
 	return resp, nil
 }
 

@@ -1,28 +1,38 @@
 {{- $RequestMethod := .RequestMethod }}
 {{- $RequestURLPath := .RequestURLPath }}
+{{- $RequestHeader := .RequestHeader }}
+{{- $RequestBody := .RequestBody }}
+{{- $ResponseHeader := .ResponseHeader }}
+{{- $ResponseBody := .ResponseBody }}
+{{- $ResponseStatus := .ResponseStatus }}
+{{- $ResponseContentType := .ResponseContentType }}
 ## Interaction 0: {{- $RequestMethod }} {{- $RequestURLPath }}
 
 ### Request headers recorded for playback:
 
 ```
-RequestHeader
+{{- range $value := $RequestHeader }}
+  {{- $value }}
+{{- end }}
 ```
 
 ### Request body recorded for playback ():
 
 ```
-Request Body
+{{ $RequestBody }}
 ```
 
 
 ### Response headers recorded for playback:
 
 ```
-Response Header
+{{ range $key, $values := $ResponseHeader }}
+  {{- $key}}: {{- range $value := $values}} {{- $value }} {{- end }}
+{{ end }}
 ```
 
-### Response body recorded for playback (200: application/xml):
+### Response body recorded for playback ({{- $ResponseStatus }}: {{- $ResponseContentType }}):
 
 ```
-Response Body
+{{ $ResponseBody }}
 ```
