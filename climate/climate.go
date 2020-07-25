@@ -98,7 +98,6 @@ func (c *ClientImpl) record(params recordData) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	data := recordData{
 		RequestMethod:       params.RequestMethod,
 		RequestURLPath:      params.RequestURLPath,
@@ -140,12 +139,15 @@ func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) 
 		_ = resp.Body.Close()
 	}()
 	respBodyBytes, _ := ioutil.ReadAll(resp.Body)
+	newRespHeader := resp.Header
+	newRespHeader.Del("Set-Cookie")
+	newRespHeader.Del("Date")
 	c.record(recordData{
 		RequestURLPath:      r.URL.Path,
 		RequestMethod:       r.Method,
 		RequestHeader:       r.Header,
 		RequestBody:         string(reqBodyBytes),
-		ResponseHeader:      resp.Header,
+		ResponseHeader:      newRespHeader,
 		ResponseBody:        string(respBodyBytes),
 		ResponseContentType: resp.Header.Get("Content-Type"),
 		ResponseStatus:      resp.Status,

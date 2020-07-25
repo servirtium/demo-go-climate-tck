@@ -1,4 +1,3 @@
-
 ## Interaction 0:GET/climateweb/rest/v1/country/annualavg/pr/1980/1999/GBR.xml
 
 ### Request headers recorded for playback:
@@ -23,11 +22,9 @@ Cache-Control:no-cache,no-store
 Connection:keep-alive
 Content-Security-Policy:default-src 'self'
 Content-Type:application/xml
-Date:Sat, 25 Jul 2020 12:16:53 GMT
 Httponly:true
 Pragma:no-cache
 Secure:true
-Set-Cookie:AWSALB=HoEL5ag/YSFLgmZmx/B6giKM9X4uLRVZ5eKy8PP//SFdZEuoZdqW0kwqWEpi2TRYwZt5AQRlNwyE4+YtsWYKlexKnrnjmSwgd+T61Svy16ugjkrSukKCg0fj4Obp; Expires=Sat, 01 Aug 2020 12:16:53 GMT; Path=/AWSALBCORS=HoEL5ag/YSFLgmZmx/B6giKM9X4uLRVZ5eKy8PP//SFdZEuoZdqW0kwqWEpi2TRYwZt5AQRlNwyE4+YtsWYKlexKnrnjmSwgd+T61Svy16ugjkrSukKCg0fj4Obp; Expires=Sat, 01 Aug 2020 12:16:53 GMT; Path=/; SameSite=None; SecureTS01c35ec3=010640bd988aa492c2ea81873dcea94b110c3e34aa9d0c378805d2f636d97528f1828e45569e76d12c1987e88e1a6fe23ee70389b9; Path=/TS0137860d=01359ee97616327513992c20dca646ac5fcbc60e7da81787edef9b8c9bdaf4138e6d24bb41330e280aa389c6a767db1b05a46552ff1d9f33d6357ac4b88c05eb785a2bfd57fe3bd6e0c5b11fcd98c6128f277e9afc9cade146fdb064c4b96d67a64936d063; Path=/
 Strict-Transport-Security:max-age=0max-age=31536000; includeSubDomains
 X-Content-Type-Options:nosniffnosniff
 X-Frame-Options:DENYdeny

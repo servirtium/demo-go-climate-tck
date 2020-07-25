@@ -1,4 +1,3 @@
-
 ## Interaction 0:GET/climateweb/rest/v1/country/annualavg/pr/1980/1999/egy.xml
 
 ### Request headers recorded for playback:
@@ -23,11 +22,9 @@ Cache-Control:no-cache,no-store
 Connection:keep-alive
 Content-Security-Policy:default-src 'self'
 Content-Type:application/xml
-Date:Sat, 25 Jul 2020 12:16:49 GMT
 Httponly:true
 Pragma:no-cache
 Secure:true
-Set-Cookie:AWSALB=0lObl4Gv2dwshYMVDEZukrpLUyF0acnGH196LM5MRdThkYgQa3YYqemF9+IVYyOaw3z8iwhnDXN+mr7M255vIiQg6CI7frzi8bVqXkstCkP90VE8T0/A21gz+M2p; Expires=Sat, 01 Aug 2020 12:16:49 GMT; Path=/AWSALBCORS=0lObl4Gv2dwshYMVDEZukrpLUyF0acnGH196LM5MRdThkYgQa3YYqemF9+IVYyOaw3z8iwhnDXN+mr7M255vIiQg6CI7frzi8bVqXkstCkP90VE8T0/A21gz+M2p; Expires=Sat, 01 Aug 2020 12:16:49 GMT; Path=/; SameSite=None; SecureTS01c35ec3=010640bd98e207ad5f309c1495d131abc11952a1a3ea72f0d52ca044743b2f5240de3e7339560bc3af1c4c833383967eed845bf673; Path=/TS0137860d=01359ee976fcabd023027005862922e6bd40070fe3a90173bbc2f48026dd78692d13eeb7d70b3810a68fe5a73943e1d7229ef5ce77dd00e2878159b0ff76203ba2686e405462f139da8c59e2453c3ed565ad4049638f3da1ddabb8cc93125ba3a56a227998; Path=/
 Strict-Transport-Security:max-age=0max-age=31536000; includeSubDomains
 X-Content-Type-Options:nosniffnosniff
 X-Frame-Options:DENYdeny
