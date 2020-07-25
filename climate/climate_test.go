@@ -118,6 +118,8 @@ func anualAvgHandlerRemote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	newRespHeader := resp.Header
+	newRespHeader.Del("Set-Cookie")
+	newRespHeader.Del("Date")
 	resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
 
 	record(recordData{
