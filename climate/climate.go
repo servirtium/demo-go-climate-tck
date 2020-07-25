@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/shopspring/decimal"
@@ -123,7 +124,7 @@ func (c *ClientImpl) GetAnnualRainfall(ctx context.Context, args GetAnnualRainfa
 	if err != nil {
 		return List{}, err
 	}
-	apiURL := fmt.Sprintf("/climateweb/rest/v1/country/annualavg/pr/%s/%s/%s.xml", args.FromCCYY, args.ToCCYY, args.CountryISO)
+	apiURL := fmt.Sprintf("/climateweb/rest/v1/country/annualavg/pr/%s/%s/%s.xml", args.FromCCYY, args.ToCCYY, strings.ToLower(args.CountryISO))
 	r, err := c.NewGetRequest(ctx, apiURL)
 	if err != nil {
 		return List{}, err
