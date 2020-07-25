@@ -11,9 +11,9 @@
 ### Request headers recorded for playback:
 
 ```
-{{- range $value := $RequestHeader }}
-  {{- $value }}
-{{- end }}
+{{ range $key, $values := $RequestHeader }}
+  {{- $key}}: {{ range $value := $values}} {{- $value }} {{- end }}
+{{ end }}
 ```
 
 ### Request body recorded for playback ():
@@ -27,7 +27,7 @@
 
 ```
 {{ range $key, $values := $ResponseHeader }}
-  {{- $key}}: {{- range $value := $values}} {{- $value }} {{- end }}
+  {{- $key}}: {{ range $value := $values}} {{- $value }} {{- end }}
 {{ end }}
 ```
 

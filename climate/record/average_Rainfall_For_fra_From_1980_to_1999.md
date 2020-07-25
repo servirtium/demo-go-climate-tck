@@ -3,6 +3,9 @@
 ### Request headers recorded for playback:
 
 ```
+Accept-Encoding: gzip
+User-Agent: Go-http-client/1.1
+
 ```
 
 ### Request body recorded for playback ():
@@ -15,20 +18,22 @@
 ### Response headers recorded for playback:
 
 ```
-Access-Control-Allow-Headers:X-Requested-With
-Access-Control-Allow-Methods:GET
-Access-Control-Allow-Origin:*
-Cache-Control:no-cache,no-store
-Connection:keep-alive
-Content-Security-Policy:default-src 'self'
-Content-Type:application/xml
-Httponly:true
-Pragma:no-cache
-Secure:true
-Strict-Transport-Security:max-age=0max-age=31536000; includeSubDomains
-X-Content-Type-Options:nosniffnosniff
-X-Frame-Options:DENYdeny
-X-Xss-Protection:1; mode=block1; mode=block
+Access-Control-Allow-Headers: X-Requested-With
+Access-Control-Allow-Methods: GET
+Access-Control-Allow-Origin: *
+Cache-Control: no-cache,no-store
+Connection: keep-alive
+Content-Security-Policy: default-src 'self'
+Content-Type: application/xml
+Date: Sat, 25 Jul 2020 14:40:02 GMT
+Httponly: true
+Pragma: no-cache
+Secure: true
+Set-Cookie: AWSALB=dNpGNhcMJyhBzXOffOJzwXkX8dQ6iuHfGNY7K2sDpDuYV95Cwoymt81S6iBRh88oJWRdIuJlmkpW4peKzjkTQdtb1TisM2Q6fByl3gvKU/ZtryxhzhqelSWcno0N; Expires=Sat, 01 Aug 2020 14:40:02 GMT; Path=/AWSALBCORS=dNpGNhcMJyhBzXOffOJzwXkX8dQ6iuHfGNY7K2sDpDuYV95Cwoymt81S6iBRh88oJWRdIuJlmkpW4peKzjkTQdtb1TisM2Q6fByl3gvKU/ZtryxhzhqelSWcno0N; Expires=Sat, 01 Aug 2020 14:40:02 GMT; Path=/; SameSite=None; SecureTS01c35ec3=010640bd98180dcf81cd1c6e98ab0b820f04681297ac278c76e2caa5ed31ff1605c426c08c78c349542d8f2aa0420e250f37228fa6; Path=/TS0137860d=017189f9475e6422288aed385084b860c89117247cb36d2cbc2948c6266897df0436710333ee48f84904f8e02f2789ecdb46977ed84cac8df06d22ea5199ae0ca30afc3606b4a286d62289f1dda79bf2ed5133ad50f3deb415181d3bbd2998155cf18e61b0; Path=/
+Strict-Transport-Security: max-age=0max-age=31536000; includeSubDomains
+X-Content-Type-Options: nosniffnosniff
+X-Frame-Options: DENYdeny
+X-Xss-Protection: 1; mode=block1; mode=block
 
 ```
 

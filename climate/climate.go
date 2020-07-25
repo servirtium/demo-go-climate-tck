@@ -1,17 +1,11 @@
 package climate
 
 import (
-	"bytes"
 	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
-	"strings"
-	"text/template"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/shopspring/decimal"
@@ -75,61 +69,8 @@ type recordData struct {
 	ResponseContentType string
 }
 
-func (c *ClientImpl) generateFileName(requestURLPath string) string {
-	params := strings.Split(requestURLPath, "/")
-	countryIndex := len(params) - 1
-	toCCYYIndex := len(params) - 2
-	fromCCYYIndex := len(params) - 3
-
-	countryISO := strings.ReplaceAll(params[countryIndex], ".xml", "")
-	fromCCYY := params[fromCCYYIndex]
-	toCCYY := params[toCCYYIndex]
-	fileName := fmt.Sprintf("./record/average_Rainfall_For_%s_From_%s_to_%s.md", countryISO, fromCCYY, toCCYY)
-	return fileName
-
-}
-
-func (c *ClientImpl) record(params recordData) {
-	content, err := ioutil.ReadFile("./template.tmpl")
-	if err != nil {
-		log.Fatal(err)
-	}
-	tmpl, err := template.New("template").Parse(string(content))
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := recordData{
-		RequestMethod:       params.RequestMethod,
-		RequestURLPath:      params.RequestURLPath,
-		RequestHeader:       params.RequestHeader,
-		RequestBody:         params.RequestBody,
-		ResponseHeader:      params.ResponseHeader,
-		ResponseBody:        params.ResponseBody,
-		ResponseContentType: params.ResponseContentType,
-		ResponseStatus:      params.ResponseStatus,
-	}
-	fileName := c.generateFileName(params.RequestURLPath)
-	buffer := new(bytes.Buffer)
-	tmpl.Execute(buffer, data)
-	file, err := os.Create(fileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	file, err = os.Create(fileName)
-	_, err = file.Write(buffer.Bytes())
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 // Do the request.
 func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) {
-	// Clone Request Body
-	var reqBodyBytes []byte
-	if r.Body != nil {
-		reqBodyBytes, _ = ioutil.ReadAll(r.Body)
-	}
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(reqBodyBytes))
 	resp, err := c.http.Do(r)
 	if err != nil {
 		return nil, err
@@ -138,22 +79,6 @@ func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) 
 	defer func() {
 		_ = resp.Body.Close()
 	}()
-	respBodyBytes, _ := ioutil.ReadAll(resp.Body)
-	newRespHeader := resp.Header
-	newRespHeader.Del("Set-Cookie")
-	newRespHeader.Del("Date")
-	c.record(recordData{
-		RequestURLPath:      r.URL.Path,
-		RequestMethod:       r.Method,
-		RequestHeader:       r.Header,
-		RequestBody:         string(reqBodyBytes),
-		ResponseHeader:      newRespHeader,
-		ResponseBody:        string(respBodyBytes),
-		ResponseContentType: resp.Header.Get("Content-Type"),
-		ResponseStatus:      resp.Status,
-	})
-	// Clone resp body
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBodyBytes))
 	if v != nil {
 		if err = xml.NewDecoder(resp.Body).Decode(v); err != nil {
 			return nil, fmt.Errorf("unable to parse XML [%s %s]: %v", r.Method, r.URL.RequestURI(), err)
@@ -198,7 +123,7 @@ func (c *ClientImpl) GetAnnualRainfall(ctx context.Context, args GetAnnualRainfa
 	if err != nil {
 		return List{}, err
 	}
-	apiURL := fmt.Sprintf("/country/annualavg/pr/%s/%s/%s.xml", args.FromCCYY, args.ToCCYY, args.CountryISO)
+	apiURL := fmt.Sprintf("/climateweb/rest/v1/country/annualavg/pr/%s/%s/%s.xml", args.FromCCYY, args.ToCCYY, args.CountryISO)
 	r, err := c.NewGetRequest(ctx, apiURL)
 	if err != nil {
 		return List{}, err
