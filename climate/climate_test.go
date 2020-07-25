@@ -53,7 +53,7 @@ func generateFileName(requestURLPath string) string {
 	countryISO := strings.ReplaceAll(params[countryIndex], ".xml", "")
 	fromCCYY := params[fromCCYYIndex]
 	toCCYY := params[toCCYYIndex]
-	fileName := fmt.Sprintf("./record/average_Rainfall_For_%s_From_%s_to_%s.md", countryISO, fromCCYY, toCCYY)
+	fileName := fmt.Sprintf("./mock/average_Rainfall_For_%s_From_%s_to_%s.md", countryISO, fromCCYY, toCCYY)
 	return fileName
 
 }
