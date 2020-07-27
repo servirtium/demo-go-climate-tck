@@ -199,6 +199,17 @@ func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exist
 	s.Nil(recordErr)
 }
 
+func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists_FailIfMarkdownIsDifferentToPreviousRecording() {
+	var (
+		ctx = context.Background()
+	)
+	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfall(ctx, 1980, 1999, "gbr")
+	s.Nil(playbackErr)
+	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "gbr")
+	s.Nil(recordErr)
+	s.Equal(playbackResult, recordResult)
+}
+
 func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists_DirectMode() {
 	var (
 		ctx      = context.Background()
@@ -227,6 +238,17 @@ func (s *ClimateTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists_Reco
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "fra")
 	s.Equal(expected, recordResult)
 	s.Nil(recordErr)
+}
+
+func (s *ClimateTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists_FailIfMarkdownIsDifferentToPreviousRecording() {
+	var (
+		ctx = context.Background()
+	)
+	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfall(ctx, 1980, 1999, "fra")
+	s.Nil(playbackErr)
+	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "fra")
+	s.Nil(recordErr)
+	s.Equal(playbackResult, recordResult)
 }
 
 func (s *ClimateTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists_DirectMode() {
@@ -259,6 +281,17 @@ func (s *ClimateTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists_Recor
 	s.Nil(recordErr)
 }
 
+func (s *ClimateTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists_FailIfMarkdownIsDifferentToPreviousRecording() {
+	var (
+		ctx = context.Background()
+	)
+	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfall(ctx, 1980, 1999, "egy")
+	s.Nil(playbackErr)
+	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "egy")
+	s.Nil(recordErr)
+	s.Equal(playbackResult, recordResult)
+}
+
 func (s *ClimateTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists_DirectMode() {
 	var (
 		ctx      = context.Background()
@@ -289,6 +322,17 @@ func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesN
 	s.Error(recordErr)
 }
 
+func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist_FailIfMarkdownIsDifferentToPreviousRecording() {
+	var (
+		ctx = context.Background()
+	)
+	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
+	s.Error(playbackErr)
+	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
+	s.Error(recordErr)
+	s.Equal(playbackResult, recordResult)
+}
+
 func (s *ClimateTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist_DirectMode() {
 	var (
 		ctx      = context.Background()
@@ -317,6 +361,17 @@ func (s *ClimateTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNo
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
 	s.Equal(expected, recordResult)
 	s.Error(recordErr)
+}
+
+func (s *ClimateTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist_FailIfMarkdownIsDifferentToPreviousRecording() {
+	var (
+		ctx = context.Background()
+	)
+	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
+	s.Error(playbackErr)
+	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
+	s.Error(recordErr)
+	s.Equal(playbackResult, recordResult)
 }
 
 func (s *ClimateTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist_DirectMode() {
