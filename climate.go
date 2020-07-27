@@ -60,6 +60,7 @@ func (c *ClientImpl) NewGetRequest(ctx context.Context, url string) (*http.Reque
 }
 
 type recordData struct {
+	RecordFileName      string
 	RequestMethod       string
 	RequestURLPath      string
 	RequestHeader       map[string][]string
