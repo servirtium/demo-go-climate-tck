@@ -1,3 +1,4 @@
+
 ## Interaction 0:GET/climateweb/rest/v1/country/annualavg/pr/1985/1995/gbr.xml
 
 ### Request headers recorded for playback:

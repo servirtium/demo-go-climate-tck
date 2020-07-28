@@ -1,14 +1,22 @@
 package climate
 
 import (
+	"bytes"
 	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net"
 	"net/http"
+	"net/http/httptest"
+	"os"
 	"strings"
+	"text/template"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 	"github.com/shopspring/decimal"
 )
 
@@ -173,4 +181,153 @@ func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, t
 	}
 	result, _ := anualAve.Float64()
 	return result, nil
+}
+
+func serverPlaybackMock(recordFileName string) *httptest.Server {
+	r := mux.NewRouter()
+	r.PathPrefix("/").HandlerFunc(anualAvgHandlerPlayback(recordFileName))
+	srv := httptest.NewServer(r)
+	return srv
+}
+
+func anualAvgHandlerPlayback(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data, err := ioutil.ReadFile(fmt.Sprintf("./mock/%s.md", recordFileName))
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_, _ = w.Write([]byte("Internal Server Error"))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/xml")
+		_, _ = w.Write(data)
+		return
+	}
+}
+
+// ManInTheMiddle ...
+func ManInTheMiddle(recordFileName string) *httptest.Server {
+	l, err := net.Listen("tcp", "127.0.0.1:61417")
+	if err != nil {
+		log.Fatal(err)
+	}
+	r := mux.NewRouter()
+	r.PathPrefix("/").HandlerFunc(manInTheMiddleHandler(recordFileName))
+	ts := httptest.NewUnstartedServer(r)
+
+	// NewUnstartedServer creates a listener. Close that listener and replace
+	// with the one we created.
+	ts.Listener.Close()
+	ts.Listener = l
+	return ts
+}
+
+func manInTheMiddleHandler(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Clone Request Body
+		reqBody, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		r.Body = ioutil.NopCloser(bytes.NewReader(reqBody))
+		url := fmt.Sprintf("%s://%s%s", "http", "climatedataapi.worldbank.org", r.RequestURI)
+		proxyReq, err := http.NewRequest(r.Method, url, bytes.NewReader(reqBody))
+
+		// We may want to filter some headers, otherwise we could just use a shallow copy
+		// proxyReq.Header = r.Header
+		proxyReq.Header = make(http.Header)
+		for h, val := range r.Header {
+			proxyReq.Header[h] = val
+		}
+		proxyReq.Header.Set("User-Agent", "Servirtium-Testing")
+
+		resp, err := http.DefaultClient.Do(proxyReq)
+		// Clone resp
+		respBody, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		newRespHeader := resp.Header
+		newRespHeader.Del("Set-Cookie")
+		newRespHeader.Del("Date")
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
+		record(recordData{
+			RecordFileName:      recordFileName,
+			RequestURLPath:      r.URL.Path,
+			RequestMethod:       r.Method,
+			RequestHeader:       r.Header,
+			RequestBody:         string(reqBody),
+			ResponseHeader:      newRespHeader,
+			ResponseBody:        string(respBody),
+			ResponseContentType: resp.Header.Get("Content-Type"),
+			ResponseStatus:      resp.Status,
+		})
+
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+		w.Write(respBody)
+	}
+}
+
+// checkMarkdownExists ...
+func checkMarkdownExists(path string) bool {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
+
+func appendContentInFile(currentContent, newContent []byte) []byte {
+	currentText := string(currentContent)
+	newText := string(newContent)
+	finalText := fmt.Sprintf("%s\n%s", currentText, newText)
+	return []byte(finalText)
+}
+
+func record(params recordData) {
+	content, err := ioutil.ReadFile("./template.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	tmpl, err := template.New("template").Parse(string(content))
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := recordData{
+		RequestMethod:       params.RequestMethod,
+		RequestURLPath:      params.RequestURLPath,
+		RequestHeader:       params.RequestHeader,
+		RequestBody:         params.RequestBody,
+		ResponseHeader:      params.ResponseHeader,
+		ResponseBody:        params.ResponseBody,
+		ResponseContentType: params.ResponseContentType,
+		ResponseStatus:      params.ResponseStatus,
+	}
+	buffer := new(bytes.Buffer)
+	tmpl.Execute(buffer, data)
+	filePath := fmt.Sprintf("./mock/%s.md", params.RecordFileName)
+	markdownExists := checkMarkdownExists(filePath)
+	if !markdownExists {
+		os.Create(filePath)
+	}
+	currentContent, _ := ioutil.ReadFile(filePath)
+	newContent := buffer.Bytes()
+	finalContent := appendContentInFile(currentContent, newContent)
+	err = ioutil.WriteFile(filePath, finalContent, os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func cleanUpMarkdownFile(recordFileName string) error {
+	err := ioutil.WriteFile(fmt.Sprintf("./mock/%s.md", recordFileName), []byte{}, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return nil
 }
