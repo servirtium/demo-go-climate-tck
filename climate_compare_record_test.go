@@ -9,17 +9,17 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type ClimateRecordTestSuite struct {
+type ClimateRecordCompareMarkdownTestSuite struct {
 	recordClient ClientImpl
 	suite.Suite
 	servirtium *ServirtiumImpl
 }
 
-func TestClimateRecordTestSuite(t *testing.T) {
-	suite.Run(t, new(ClimateRecordTestSuite))
+func TestClimateRecordCompareMarkdownTestSuite(t *testing.T) {
+	suite.Run(t, new(ClimateRecordCompareMarkdownTestSuite))
 }
 
-func (s *ClimateRecordTestSuite) BeforeTest(suiteName, testName string) {
+func (s *ClimateRecordCompareMarkdownTestSuite) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
 	servirtium := NewServirtium()
 	s.servirtium = servirtium
@@ -28,14 +28,13 @@ func (s *ClimateRecordTestSuite) BeforeTest(suiteName, testName string) {
 	s.recordClient = *recordClient
 }
 
-func (s *ClimateRecordTestSuite) AfterTest(suite, testName string) {
+func (s *ClimateRecordCompareMarkdownTestSuite) AfterTest(suite, testName string) {
 	isMatch := s.servirtium.CheckMarkdownIsDifferentToPreviousRecording(testName)
 	s.True(isMatch)
-	s.servirtium.WriteRecord(testName)
 	s.servirtium.EndRecord()
 }
 
-func (s *ClimateRecordTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
+func (s *ClimateRecordCompareMarkdownTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
 	var (
 		ctx      = context.Background()
 		expected = float64(988.8454972331014)
@@ -45,7 +44,7 @@ func (s *ClimateRecordTestSuite) TestAverageRainfallForGreatBritainFrom1980to199
 	s.Nil(recordErr)
 }
 
-func (s *ClimateRecordTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists() {
+func (s *ClimateRecordCompareMarkdownTestSuite) TestAverageRainfallForFranceFrom1980to1999Exists() {
 	var (
 		ctx      = context.Background()
 		expected = 913.7986955122727
@@ -55,7 +54,7 @@ func (s *ClimateRecordTestSuite) TestAverageRainfallForFranceFrom1980to1999Exist
 	s.Nil(recordErr)
 }
 
-func (s *ClimateRecordTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists() {
+func (s *ClimateRecordCompareMarkdownTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists() {
 	var (
 		ctx      = context.Background()
 		expected = float64(54.58587712129825)
@@ -65,7 +64,7 @@ func (s *ClimateRecordTestSuite) TestAverageRainfallForEgyptFrom1980to1999Exists
 	s.Nil(recordErr)
 }
 
-func (s *ClimateRecordTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
+func (s *ClimateRecordCompareMarkdownTestSuite) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
 	var (
 		ctx      = context.Background()
 		expected = float64(0)
@@ -75,7 +74,7 @@ func (s *ClimateRecordTestSuite) TestAverageRainfallForGreatBritainFrom1985to199
 	s.Error(recordErr)
 }
 
-func (s *ClimateRecordTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
+func (s *ClimateRecordCompareMarkdownTestSuite) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
 	var (
 		ctx      = context.Background()
 		expected = float64(0)

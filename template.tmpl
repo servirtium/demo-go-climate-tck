@@ -5,8 +5,9 @@
 {{- $ResponseHeader := .ResponseHeader }}
 {{- $ResponseBody := .ResponseBody }}
 {{- $ResponseStatus := .ResponseStatus }}
+{{- $RecordSequence := .RecordSequence }}
 {{- $ResponseContentType := .ResponseContentType -}}
-## Interaction 0: {{- $RequestMethod }} {{- $RequestURLPath }}
+## Interaction {{ $RecordSequence }}: {{ $RequestMethod }} {{- $RequestURLPath }}
 
 ### Request headers recorded for playback:
 

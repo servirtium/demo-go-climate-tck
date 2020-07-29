@@ -173,8 +173,10 @@ func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, t
 
 // IServirtium ...
 type IServirtium interface {
-	StartRecord(recordFileName string)
-	EndRecord(recordFileName string)
+	StartRecord()
+	WriteRecord(recordFileName string)
+	CheckMarkdownIsDifferentToPreviousRecording(recordFileName string) bool
+	EndRecord()
 	StartPlayback(recordFileName string)
 	EndPlayback(recordFileName string)
 }
@@ -228,13 +230,13 @@ func (s *ServirtiumImpl) anualAvgHandlerPlayback(recordFileName string) func(w h
 }
 
 // StartRecord ...
-func (s *ServirtiumImpl) StartRecord(recordFileName string) {
-	s.initRecordServer(recordFileName)
+func (s *ServirtiumImpl) StartRecord() {
+	s.initRecordServer()
 	s.ServerRecord.Start()
 }
 
-// EndRecord ...
-func (s *ServirtiumImpl) EndRecord(recordFileName string) {
+// WriteRecord ...
+func (s *ServirtiumImpl) WriteRecord(recordFileName string) {
 	filePath := fmt.Sprintf("./mock/%s.md", recordFileName)
 	markdownExists := s.checkMarkdownExists(filePath)
 	if !markdownExists {
@@ -244,16 +246,20 @@ func (s *ServirtiumImpl) EndRecord(recordFileName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// EndRecord ...
+func (s *ServirtiumImpl) EndRecord() {
 	s.ServerRecord.Close()
 }
 
-func (s *ServirtiumImpl) initRecordServer(recordFileName string) {
+func (s *ServirtiumImpl) initRecordServer() {
 	l, err := net.Listen("tcp", "127.0.0.1:61417")
 	if err != nil {
 		log.Fatal(err)
 	}
 	r := mux.NewRouter()
-	r.PathPrefix("/").HandlerFunc(s.manInTheMiddleHandler(recordFileName))
+	r.PathPrefix("/").HandlerFunc(s.manInTheMiddleHandler())
 	ts := httptest.NewUnstartedServer(r)
 
 	// NewUnstartedServer creates a listener. Close that listener and replace
@@ -264,7 +270,7 @@ func (s *ServirtiumImpl) initRecordServer(recordFileName string) {
 }
 
 type recordData struct {
-	RecordFileName      string
+	RecordSequence      int64
 	RequestMethod       string
 	RequestURLPath      string
 	RequestHeader       map[string][]string
@@ -275,7 +281,7 @@ type recordData struct {
 	ResponseContentType string
 }
 
-func (s *ServirtiumImpl) manInTheMiddleHandler(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
+func (s *ServirtiumImpl) manInTheMiddleHandler() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Clone Request Body
 		reqBody, err := ioutil.ReadAll(r.Body)
@@ -307,7 +313,6 @@ func (s *ServirtiumImpl) manInTheMiddleHandler(recordFileName string) func(w htt
 		newRespHeader.Del("Date")
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
 		s.record(recordData{
-			RecordFileName:      recordFileName,
 			RequestURLPath:      r.URL.Path,
 			RequestMethod:       r.Method,
 			RequestHeader:       r.Header,
@@ -353,6 +358,7 @@ func (s *ServirtiumImpl) record(params recordData) {
 		log.Fatal(err)
 	}
 	data := recordData{
+		RecordSequence:      s.RequestSequence,
 		RequestMethod:       params.RequestMethod,
 		RequestURLPath:      params.RequestURLPath,
 		RequestHeader:       params.RequestHeader,
@@ -370,10 +376,12 @@ func (s *ServirtiumImpl) record(params recordData) {
 	s.RequestSequence = s.RequestSequence + 1
 }
 
-func (s *ServirtiumImpl) cleanUpMarkdownFile(recordFileName string) error {
-	err := ioutil.WriteFile(fmt.Sprintf("./mock/%s.md", recordFileName), []byte{}, os.ModePerm)
+// CheckMarkdownIsDifferentToPreviousRecording ...
+func (s *ServirtiumImpl) CheckMarkdownIsDifferentToPreviousRecording(recordFileName string) bool {
+	filePath := fmt.Sprintf("./mock/%s.md", recordFileName)
+	fileContent, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
+	return s.Content == string(fileContent)
 }
