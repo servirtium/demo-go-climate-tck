@@ -67,18 +67,6 @@ func (c *ClientImpl) NewGetRequest(ctx context.Context, url string) (*http.Reque
 	return r.WithContext(ctx), nil
 }
 
-type recordData struct {
-	RecordFileName      string
-	RequestMethod       string
-	RequestURLPath      string
-	RequestHeader       map[string][]string
-	RequestBody         string
-	ResponseHeader      map[string][]string
-	ResponseBody        string
-	ResponseStatus      string
-	ResponseContentType string
-}
-
 // Do the request.
 func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.http.Do(r)
@@ -183,14 +171,48 @@ func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, t
 	return result, nil
 }
 
-func serverPlaybackMock(recordFileName string) *httptest.Server {
-	r := mux.NewRouter()
-	r.PathPrefix("/").HandlerFunc(anualAvgHandlerPlayback(recordFileName))
-	srv := httptest.NewServer(r)
-	return srv
+// IServirtium ...
+type IServirtium interface {
+	StartRecord(recordFileName string)
+	EndRecord(recordFileName string)
+	StartPlayback(recordFileName string)
+	EndPlayback(recordFileName string)
 }
 
-func anualAvgHandlerPlayback(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
+// ServirtiumImpl ...
+type ServirtiumImpl struct {
+	ServerPlayback  *httptest.Server
+	ServerRecord    *httptest.Server
+	RequestSequence int64
+	Content         string
+}
+
+// NewServirtium ...
+func NewServirtium() *ServirtiumImpl {
+	return &ServirtiumImpl{
+		RequestSequence: 0,
+		Content:         "",
+	}
+}
+
+// StartPlayback ...
+func (s *ServirtiumImpl) StartPlayback(recordFileName string) {
+	s.initServerPlayback(recordFileName)
+}
+
+// EndPlayback ...
+func (s *ServirtiumImpl) EndPlayback(recordFileName string) {
+	s.ServerPlayback.Close()
+}
+
+func (s *ServirtiumImpl) initServerPlayback(recordFileName string) {
+	r := mux.NewRouter()
+	r.PathPrefix("/").HandlerFunc(s.anualAvgHandlerPlayback(recordFileName))
+	srv := httptest.NewServer(r)
+	s.ServerPlayback = srv
+}
+
+func (s *ServirtiumImpl) anualAvgHandlerPlayback(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, err := ioutil.ReadFile(fmt.Sprintf("./mock/%s.md", recordFileName))
 		if err != nil {
@@ -205,24 +227,55 @@ func anualAvgHandlerPlayback(recordFileName string) func(w http.ResponseWriter, 
 	}
 }
 
-// ManInTheMiddle ...
-func ManInTheMiddle(recordFileName string) *httptest.Server {
+// StartRecord ...
+func (s *ServirtiumImpl) StartRecord(recordFileName string) {
+	s.initRecordServer(recordFileName)
+	s.ServerRecord.Start()
+}
+
+// EndRecord ...
+func (s *ServirtiumImpl) EndRecord(recordFileName string) {
+	filePath := fmt.Sprintf("./mock/%s.md", recordFileName)
+	markdownExists := s.checkMarkdownExists(filePath)
+	if !markdownExists {
+		os.Create(filePath)
+	}
+	err := ioutil.WriteFile(filePath, []byte(s.Content), os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+	s.ServerRecord.Close()
+}
+
+func (s *ServirtiumImpl) initRecordServer(recordFileName string) {
 	l, err := net.Listen("tcp", "127.0.0.1:61417")
 	if err != nil {
 		log.Fatal(err)
 	}
 	r := mux.NewRouter()
-	r.PathPrefix("/").HandlerFunc(manInTheMiddleHandler(recordFileName))
+	r.PathPrefix("/").HandlerFunc(s.manInTheMiddleHandler(recordFileName))
 	ts := httptest.NewUnstartedServer(r)
 
 	// NewUnstartedServer creates a listener. Close that listener and replace
 	// with the one we created.
 	ts.Listener.Close()
 	ts.Listener = l
-	return ts
+	s.ServerRecord = ts
 }
 
-func manInTheMiddleHandler(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
+type recordData struct {
+	RecordFileName      string
+	RequestMethod       string
+	RequestURLPath      string
+	RequestHeader       map[string][]string
+	RequestBody         string
+	ResponseHeader      map[string][]string
+	ResponseBody        string
+	ResponseStatus      string
+	ResponseContentType string
+}
+
+func (s *ServirtiumImpl) manInTheMiddleHandler(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Clone Request Body
 		reqBody, err := ioutil.ReadAll(r.Body)
@@ -253,7 +306,7 @@ func manInTheMiddleHandler(recordFileName string) func(w http.ResponseWriter, r 
 		newRespHeader.Del("Set-Cookie")
 		newRespHeader.Del("Date")
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
-		record(recordData{
+		s.record(recordData{
 			RecordFileName:      recordFileName,
 			RequestURLPath:      r.URL.Path,
 			RequestMethod:       r.Method,
@@ -273,7 +326,7 @@ func manInTheMiddleHandler(recordFileName string) func(w http.ResponseWriter, r 
 }
 
 // checkMarkdownExists ...
-func checkMarkdownExists(path string) bool {
+func (s *ServirtiumImpl) checkMarkdownExists(path string) bool {
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
 			return false
@@ -282,14 +335,15 @@ func checkMarkdownExists(path string) bool {
 	return true
 }
 
-func appendContentInFile(currentContent, newContent []byte) []byte {
-	currentText := string(currentContent)
-	newText := string(newContent)
-	finalText := fmt.Sprintf("%s\n%s", currentText, newText)
-	return []byte(finalText)
+func (s *ServirtiumImpl) appendContentInFile(currentContent, newContent string) string {
+	if s.RequestSequence == 0 {
+		return newContent
+	}
+	finalContent := fmt.Sprintf("%s\n%s", currentContent, newContent)
+	return finalContent
 }
 
-func record(params recordData) {
+func (s *ServirtiumImpl) record(params recordData) {
 	content, err := ioutil.ReadFile("./template.tmpl")
 	if err != nil {
 		log.Fatal(err)
@@ -310,21 +364,13 @@ func record(params recordData) {
 	}
 	buffer := new(bytes.Buffer)
 	tmpl.Execute(buffer, data)
-	filePath := fmt.Sprintf("./mock/%s.md", params.RecordFileName)
-	markdownExists := checkMarkdownExists(filePath)
-	if !markdownExists {
-		os.Create(filePath)
-	}
-	currentContent, _ := ioutil.ReadFile(filePath)
 	newContent := buffer.Bytes()
-	finalContent := appendContentInFile(currentContent, newContent)
-	err = ioutil.WriteFile(filePath, finalContent, os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
+	finalContent := s.appendContentInFile(s.Content, string(newContent))
+	s.Content = finalContent
+	s.RequestSequence = s.RequestSequence + 1
 }
 
-func cleanUpMarkdownFile(recordFileName string) error {
+func (s *ServirtiumImpl) cleanUpMarkdownFile(recordFileName string) error {
 	err := ioutil.WriteFile(fmt.Sprintf("./mock/%s.md", recordFileName), []byte{}, os.ModePerm)
 	if err != nil {
 		return err

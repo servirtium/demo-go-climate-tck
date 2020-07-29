@@ -3,7 +3,6 @@ package climate
 import (
 	"context"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
@@ -13,28 +12,24 @@ import (
 type ClimateRecordTestSuite struct {
 	recordClient ClientImpl
 	suite.Suite
-	serverListenWithPort *httptest.Server
+	servirtium *ServirtiumImpl
 }
 
 func TestClimateRecordTestSuite(t *testing.T) {
 	suite.Run(t, new(ClimateRecordTestSuite))
 }
 
-func (s *ClimateRecordTestSuite) TearDownTest() {
-	s.serverListenWithPort.Close()
-}
-
-func (s *ClimateRecordTestSuite) SetupTest() {
+func (s *ClimateRecordTestSuite) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
-	recordClient := NewClient(http.DefaultClient, validate, "http://localhost:61417")
+	servirtium := NewServirtium()
+	s.servirtium = servirtium
+	s.servirtium.StartRecord(testName)
+	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.URL)
 	s.recordClient = *recordClient
 }
 
-func (s *ClimateRecordTestSuite) BeforeTest(suiteName, testName string) {
-	ts := ManInTheMiddle(testName)
-	s.serverListenWithPort = ts
-	s.serverListenWithPort.Start()
-	cleanUpMarkdownFile(testName)
+func (s *ClimateRecordTestSuite) AfterTest(suite, testName string) {
+	s.servirtium.EndRecord(testName)
 }
 
 func (s *ClimateRecordTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
