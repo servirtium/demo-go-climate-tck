@@ -174,7 +174,7 @@ func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, t
 
 // IServirtium ...
 type IServirtium interface {
-	StartRecord()
+	StartRecord(apiURL string)
 	WriteRecord(recordFileName string)
 	CheckMarkdownIsDifferentToPreviousRecording(recordFileName string) bool
 	EndRecord()
@@ -217,7 +217,11 @@ func (s *ServirtiumImpl) initServerPlayback(recordFileName string) {
 
 func (s *ServirtiumImpl) anualAvgHandlerPlayback(recordFileName string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data, err := ioutil.ReadFile(fmt.Sprintf("./mock/%s.md", recordFileName))
+		workingPath, err := os.Getwd()
+		if err != nil {
+			log.Fatal(err)
+		}
+		data, err := ioutil.ReadFile(fmt.Sprintf("%s/mock/%s.md", workingPath, recordFileName))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, _ = w.Write([]byte("Internal Server Error"))
@@ -231,20 +235,24 @@ func (s *ServirtiumImpl) anualAvgHandlerPlayback(recordFileName string) func(w h
 }
 
 // StartRecord ...
-func (s *ServirtiumImpl) StartRecord() {
-	s.initRecordServer()
+func (s *ServirtiumImpl) StartRecord(apiURL string) {
+	s.initRecordServer(apiURL)
 	s.ServerRecord.Start()
 }
 
 // WriteRecord ...
 func (s *ServirtiumImpl) WriteRecord(recordFileName string) {
-	filePath := fmt.Sprintf("./mock/%s.md", recordFileName)
+	workingPath, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	filePath := fmt.Sprintf("%s/mock/%s.md", workingPath, recordFileName)
 	markdownExists := s.checkMarkdownExists(filePath)
 	if !markdownExists {
 		pretty.Println(filePath)
 		os.Create(filePath)
 	}
-	err := ioutil.WriteFile(filePath, []byte(s.Content), os.ModePerm)
+	err = ioutil.WriteFile(filePath, []byte(s.Content), os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -255,13 +263,13 @@ func (s *ServirtiumImpl) EndRecord() {
 	s.ServerRecord.Close()
 }
 
-func (s *ServirtiumImpl) initRecordServer() {
+func (s *ServirtiumImpl) initRecordServer(apiURL string) {
 	l, err := net.Listen("tcp", "127.0.0.1:61417")
 	if err != nil {
 		log.Fatal(err)
 	}
 	r := mux.NewRouter()
-	r.PathPrefix("/").HandlerFunc(s.manInTheMiddleHandler())
+	r.PathPrefix("/").HandlerFunc(s.manInTheMiddleHandler(apiURL))
 	ts := httptest.NewUnstartedServer(r)
 
 	// NewUnstartedServer creates a listener. Close that listener and replace
@@ -283,7 +291,7 @@ type recordData struct {
 	ResponseContentType string
 }
 
-func (s *ServirtiumImpl) manInTheMiddleHandler() func(w http.ResponseWriter, r *http.Request) {
+func (s *ServirtiumImpl) manInTheMiddleHandler(apiURL string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Clone Request Body
 		reqBody, err := ioutil.ReadAll(r.Body)
@@ -292,7 +300,7 @@ func (s *ServirtiumImpl) manInTheMiddleHandler() func(w http.ResponseWriter, r *
 			return
 		}
 		r.Body = ioutil.NopCloser(bytes.NewReader(reqBody))
-		url := fmt.Sprintf("%s://%s%s", "http", "climatedataapi.worldbank.org", r.RequestURI)
+		url := fmt.Sprintf("%s%s", apiURL, r.RequestURI)
 		proxyReq, err := http.NewRequest(r.Method, url, bytes.NewReader(reqBody))
 
 		// We may want to filter some headers, otherwise we could just use a shallow copy
@@ -351,7 +359,11 @@ func (s *ServirtiumImpl) appendContentInFile(currentContent, newContent string) 
 }
 
 func (s *ServirtiumImpl) record(params recordData) {
-	content, err := ioutil.ReadFile("./template.tmpl")
+	workingPath, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	content, err := ioutil.ReadFile(fmt.Sprintf("%s/template.tmpl", workingPath))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -380,7 +392,11 @@ func (s *ServirtiumImpl) record(params recordData) {
 
 // CheckMarkdownIsDifferentToPreviousRecording ...
 func (s *ServirtiumImpl) CheckMarkdownIsDifferentToPreviousRecording(recordFileName string) bool {
-	filePath := fmt.Sprintf("./mock/%s.md", recordFileName)
+	workingPath, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	filePath := fmt.Sprintf("%s/mock/%s.md", workingPath, recordFileName)
 	fileContent, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)

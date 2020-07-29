@@ -23,7 +23,7 @@ func (s *ClimateRecordCompareMarkdownTestSuite) BeforeTest(suiteName, testName s
 	validate := validator.New()
 	servirtium := NewServirtium()
 	s.servirtium = servirtium
-	s.servirtium.StartRecord()
+	s.servirtium.StartRecord("http://climatedataapi.worldbank.org")
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.URL)
 	s.recordClient = *recordClient
 }
