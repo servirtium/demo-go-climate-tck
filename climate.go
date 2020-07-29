@@ -17,6 +17,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
+	"github.com/kr/pretty"
 	"github.com/shopspring/decimal"
 )
 
@@ -240,6 +241,7 @@ func (s *ServirtiumImpl) WriteRecord(recordFileName string) {
 	filePath := fmt.Sprintf("./mock/%s.md", recordFileName)
 	markdownExists := s.checkMarkdownExists(filePath)
 	if !markdownExists {
+		pretty.Println(filePath)
 		os.Create(filePath)
 	}
 	err := ioutil.WriteFile(filePath, []byte(s.Content), os.ModePerm)
