@@ -179,7 +179,7 @@ type IServirtium interface {
 	CheckMarkdownIsDifferentToPreviousRecording(recordFileName string) bool
 	EndRecord()
 	StartPlayback(recordFileName string)
-	EndPlayback(recordFileName string)
+	EndPlayback()
 }
 
 // ServirtiumImpl ...
@@ -204,7 +204,7 @@ func (s *ServirtiumImpl) StartPlayback(recordFileName string) {
 }
 
 // EndPlayback ...
-func (s *ServirtiumImpl) EndPlayback(recordFileName string) {
+func (s *ServirtiumImpl) EndPlayback() {
 	s.ServerPlayback.Close()
 }
 

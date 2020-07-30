@@ -31,7 +31,7 @@ func (s *ClimatePlaybackTestSuite) BeforeTest(suiteName, testName string) {
 }
 
 func (s *ClimatePlaybackTestSuite) AfterTest(suite, testName string) {
-	s.servirtium.EndPlayback(testName)
+	s.servirtium.EndPlayback()
 }
 
 func (s *ClimatePlaybackTestSuite) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
