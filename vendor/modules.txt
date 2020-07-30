@@ -1,8 +1,5 @@
 # github.com/davecgh/go-spew v1.1.0
 github.com/davecgh/go-spew/spew
-# github.com/elazarl/goproxy v0.0.0-20200710112657-153946a5f232
-## explicit
-github.com/elazarl/goproxy
 # github.com/go-playground/locales v0.13.0
 github.com/go-playground/locales
 github.com/go-playground/locales/currency
@@ -31,7 +28,5 @@ github.com/shopspring/decimal
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 github.com/stretchr/testify/suite
-# golang.org/x/net v0.0.0-20200707034311-ab3426394381
-## explicit
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3
