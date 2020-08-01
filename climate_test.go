@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
+	servirtium "github.com/servirtium/servirtium-go"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -14,7 +15,7 @@ type ClimateTestSuite struct {
 	directClient   ClientImpl
 	playbackClient ClientImpl
 	suite.Suite
-	servirtium *ServirtiumImpl
+	servirtium *servirtium.Impl
 }
 
 func TestClimateTestSuite(t *testing.T) {
@@ -29,7 +30,7 @@ func (s *ClimateTestSuite) SetupTest() {
 
 func (s *ClimateTestSuite) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
-	servirtium := NewServirtium()
+	servirtium := servirtium.NewServirtium()
 	s.servirtium = servirtium
 	s.servirtium.StartRecord("http://climatedataapi.worldbank.org")
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.URL)
