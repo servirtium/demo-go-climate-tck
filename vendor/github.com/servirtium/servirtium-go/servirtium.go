@@ -12,22 +12,27 @@ import (
 	"text/template"
 
 	"github.com/gorilla/mux"
-	"github.com/kr/pretty"
 )
 
 // Impl ...
 type Impl struct {
-	ServerPlayback  *httptest.Server
-	ServerRecord    *httptest.Server
-	RequestSequence int64
-	Content         string
+	ServerPlayback      *httptest.Server
+	ServerRecord        *httptest.Server
+	RequestSequence     int64
+	Content             string
+	ReqHeadersNeedDel   []string
+	RespHeadersNeedDel  []string
+	ReqHeadersNeedMask  map[string]string
+	RespHeadersNeedMask map[string]string
 }
 
 // NewServirtium ...
 func NewServirtium() *Impl {
 	return &Impl{
-		RequestSequence: 0,
-		Content:         "",
+		RequestSequence:    0,
+		Content:            "",
+		ReqHeadersNeedDel:  []string{},
+		RespHeadersNeedDel: []string{},
 	}
 }
 
@@ -81,7 +86,6 @@ func (s *Impl) WriteRecord(recordFileName string) {
 	filePath := fmt.Sprintf("%s/mock/%s.md", workingPath, recordFileName)
 	markdownExists := s.checkMarkdownExists(filePath)
 	if !markdownExists {
-		pretty.Println(filePath)
 		os.Create(filePath)
 	}
 	err = ioutil.WriteFile(filePath, []byte(s.Content), os.ModePerm)
@@ -133,15 +137,16 @@ func (s *Impl) manInTheMiddleHandler(apiURL string) func(w http.ResponseWriter, 
 		}
 		r.Body = ioutil.NopCloser(bytes.NewReader(reqBody))
 		url := fmt.Sprintf("%s%s", apiURL, r.RequestURI)
-		proxyReq, err := http.NewRequest(r.Method, url, bytes.NewReader(reqBody))
-
-		// We may want to filter some headers, otherwise we could just use a shallow copy
-		// proxyReq.Header = r.Header
-		proxyReq.Header = make(http.Header)
-		for h, val := range r.Header {
-			proxyReq.Header[h] = val
+		for _, v := range s.RespHeadersNeedDel {
+			r.Header.Del(v)
 		}
-		proxyReq.Header.Set("User-Agent", "Servirtium-Testing")
+		proxyReq, err := http.NewRequest(r.Method, url, bytes.NewReader(reqBody))
+		// We may want to filter some headers, otherwise we could just use a shallow copy
+		// proxyReq.Header = make(http.Header)
+		// for h, val := range r.Header {
+		// 	proxyReq.Header[h] = val
+		// }
+		proxyReq.Header = r.Header
 
 		resp, err := http.DefaultClient.Do(proxyReq)
 		// Clone resp
@@ -151,8 +156,9 @@ func (s *Impl) manInTheMiddleHandler(apiURL string) func(w http.ResponseWriter, 
 			return
 		}
 		newRespHeader := resp.Header
-		newRespHeader.Del("Set-Cookie")
-		newRespHeader.Del("Date")
+		for _, v := range s.RespHeadersNeedDel {
+			newRespHeader.Del(v)
+		}
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
 		s.record(recordData{
 			RequestURLPath:      r.URL.Path,
@@ -234,4 +240,25 @@ func (s *Impl) CheckMarkdownIsDifferentToPreviousRecording(recordFileName string
 		log.Fatal(err)
 	}
 	return s.Content == string(fileContent)
+}
+
+// DelRespHeaders ...
+func (s *Impl) DelRespHeaders(headers []string) {
+	for _, v := range headers {
+		s.RespHeadersNeedDel = append(s.RespHeadersNeedDel, v)
+	}
+}
+
+// DelReqHeaders ...
+func (s *Impl) DelReqHeaders(headers []string) {
+	for _, v := range headers {
+		s.ReqHeadersNeedDel = append(s.ReqHeadersNeedDel, v)
+	}
+}
+
+// MaskReqHeaders ...
+func (s *Impl) MaskReqHeaders(headers map[string]string) {
+	for _, v := range headers {
+		s.ReqHeadersNeedDel = append(s.ReqHeadersNeedDel, v)
+	}
 }

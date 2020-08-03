@@ -3,6 +3,8 @@
 Run command `make install`
 ## How to run test
 Run command `make test`
+## How to run particular test
+Run commmand `TEST_SUITE="TestClimateTestSuiteDirect" make test`
 ## View Test coverage
 Add this command to `~/.profile`  
 ```  
