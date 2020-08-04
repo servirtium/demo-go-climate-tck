@@ -24,8 +24,8 @@ func (s *ClimateTestSuitePlayback) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
 	servirtium := servirtium.NewServirtium()
 	s.servirtium = servirtium
-	s.servirtium.DelRespHeaders([]string{"Set-Cookie", "Date"})
-	s.servirtium.DelRespHeaders([]string{"User-Agent"})
+	s.servirtium.DeleteResponseHeaders([]string{"Set-Cookie", "Date"})
+	s.servirtium.DeleteResponseHeaders([]string{"User-Agent"})
 	s.servirtium.StartPlayback(testName)
 	playbackClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerPlayback.URL)
 	s.playbackClient = *playbackClient
