@@ -8,7 +8,9 @@ clean:
 	@rm -rf main
 test_all:
 	@go test -v -race ./...
-
-TEST_SUITE = "TestClimateTestSuiteRecord"
-test:
-	@go test -v --race -run ^$(TEST_SUITE)$
+test_record:
+	@go test -v --race -run ^TestClimateTestSuiteRecord$
+test_playback:
+	@go test -v --race -run ^TestClimateTestSuitePlayback$
+test_direct:
+	@go test -v --race -run ^TestClimateTestSuiteDirect$

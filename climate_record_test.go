@@ -24,6 +24,8 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
 	s.servirtium = servirtium.NewServirtium()
 	s.servirtium.DelRespHeaders([]string{"Set-Cookie", "Date"})
+	s.servirtium.ReplaceRequestHeaders(map[string]string{"User-Agent": "Servirtium"})
+	// s.servirtium.MaskRequestHeaders(map[string]string{"User-Agent": "****"})
 	s.servirtium.StartRecord("http://climatedataapi.worldbank.org")
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.URL)
 	s.recordClient = *recordClient

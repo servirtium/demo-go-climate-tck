@@ -32,10 +32,6 @@ func (s *ClimateTestSuitePlayback) BeforeTest(suiteName, testName string) {
 }
 
 func (s *ClimateTestSuitePlayback) AfterTest(suite, testName string) {
-	isMatch := s.servirtium.CheckMarkdownIsDifferentToPreviousRecording(testName)
-	s.True(isMatch)
-	s.servirtium.WriteRecord(testName)
-	s.servirtium.EndRecord()
 	s.servirtium.EndPlayback()
 }
 

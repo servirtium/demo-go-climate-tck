@@ -4,7 +4,7 @@
 
 ```
 Accept-Encoding: gzip
-User-Agent: Go-http-client/1.1
+User-Agent: Servirtium
 
 ```
 

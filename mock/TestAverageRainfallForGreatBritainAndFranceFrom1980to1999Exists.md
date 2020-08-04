@@ -4,7 +4,7 @@
 
 ```
 Accept-Encoding: gzip
-User-Agent: Go-http-client/1.1
+User-Agent: Servirtium
 
 ```
 
@@ -183,7 +183,7 @@ X-Xss-Protection: 1; mode=block1; mode=block
 
 ```
 Accept-Encoding: gzip
-User-Agent: Go-http-client/1.1
+User-Agent: Servirtium
 
 ```
 
