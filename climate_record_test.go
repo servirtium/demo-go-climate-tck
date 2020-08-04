@@ -3,7 +3,6 @@ package climate
 import (
 	"context"
 	"net/http"
-	"regexp"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
@@ -27,8 +26,8 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 	s.servirtium.DeleteResponseHeaders([]string{"Set-Cookie", "Date"})
 	s.servirtium.ReplaceRequestHeaders(map[string]string{"User-Agent": "Servirtium"})
 	// s.servirtium.MaskRequestHeaders(map[string]string{"User-Agent": "****"})
-	passwordRegex := regexp.MustCompile(`/(<password>.{0,}<\/password>)/g`)
-	s.servirtium.MaskResponseBody(map[*regexp.Regexp]string{passwordRegex: "MASKED"})
+	// passwordRegex := regexp.MustCompile(`(<password>.{0,}<\/password>)`)
+	// s.servirtium.MaskResponseBody(map[*regexp.Regexp]string{passwordRegex: "<password>MASKED</password>"})
 
 	s.servirtium.StartRecord("http://climatedataapi.worldbank.org")
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.URL)
