@@ -3,6 +3,7 @@ package climate
 import (
 	"context"
 	"net/http"
+	"regexp"
 	"testing"
 
 	"github.com/go-playground/validator/v10"
@@ -23,11 +24,10 @@ func TestClimateTestSuiteRecord(t *testing.T) {
 func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
 	s.servirtium = servirtium.NewServirtium()
-	s.servirtium.DeleteResponseHeaders([]string{"Set-Cookie", "Date"})
-	s.servirtium.ReplaceRequestHeaders(map[string]string{"User-Agent": "Servirtium"})
-	// s.servirtium.MaskRequestHeaders(map[string]string{"User-Agent": "****"})
-	// passwordRegex := regexp.MustCompile(`(<password>.{0,}<\/password>)`)
-	// s.servirtium.MaskResponseBody(map[*regexp.Regexp]string{passwordRegex: "<password>MASKED</password>"})
+	s.servirtium.ReplaceRequestHeaders(map[string]string{"User-Agent": "Servirtium-Testing"})
+	s.servirtium.MaskResponseHeaders(map[string]string{"Set-Cookie": "REPLACED-IN-RECORDING", "Date": "Tue, 04 Aug 2020 16:53:25 GMT"})
+	passwordRegex := regexp.MustCompile(`(<password>.{0,}<\/password>)`)
+	s.servirtium.MaskResponseBody(map[*regexp.Regexp]string{passwordRegex: "<password>MASKED</password>"})
 	s.servirtium.StartRecord("http://climatedataapi.worldbank.org")
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.URL)
 	s.recordClient = *recordClient

@@ -139,17 +139,8 @@ func removeHeader(header http.Header, deleteItems []string) http.Header {
 	return header
 }
 
-func maskHeader(header http.Header, maskItems map[string]string) http.Header {
-	for k, v := range maskItems {
-		if _, isFound := header[k]; isFound {
-			header.Set(k, v)
-		}
-	}
-	return header
-}
-
-func replaceHeader(header http.Header, maskItems map[string]string) http.Header {
-	for k, v := range maskItems {
+func replaceHeader(header http.Header, replaceItems map[string]string) http.Header {
+	for k, v := range replaceItems {
 		if _, isFound := header[k]; isFound {
 			header.Set(k, v)
 		}
@@ -187,13 +178,13 @@ func (s *Impl) manInTheMiddleHandler(apiURL string) func(w http.ResponseWriter, 
 			return
 		}
 		// Modify Request Header before write
-		newRequestHeader := maskHeader(proxyRequest.Header, s.requestHeadersNeedMask)
+		newRequestHeader := replaceHeader(proxyRequest.Header, s.requestHeadersNeedMask)
 		maskedRequestBody := maskBody(string(requestBody), s.requestBodyNeedMask)
 
 		// Modify Response Header before write
 		newResponseHeader := replaceHeader(response.Header, s.responseHeaderNeedReplace)
 		removedResponseHeader := removeHeader(newResponseHeader, s.responseHeadersNeedDelete)
-		maskedResponseHeader := maskHeader(removedResponseHeader, s.responseHeadersNeedMask)
+		maskedResponseHeader := replaceHeader(removedResponseHeader, s.responseHeadersNeedMask)
 		maskedResponseBody := maskBody(string(responseBody), s.responseBodyNeedMask)
 
 		s.record(recordData{
@@ -282,8 +273,8 @@ func (s *Impl) CheckMarkdownIsDifferentToPreviousRecording(recordFileName string
 	return newContent == string(fileContent)
 }
 
-// DeleleteRequestHeaders ...
-func (s *Impl) DeleleteRequestHeaders(headers []string) {
+// DeleteRequestHeaders ...
+func (s *Impl) DeleteRequestHeaders(headers []string) {
 	for _, v := range headers {
 		s.requestHeadersNeedDelete = append(s.requestHeadersNeedDelete, v)
 	}
