@@ -28,7 +28,6 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 	// s.servirtium.MaskRequestHeaders(map[string]string{"User-Agent": "****"})
 	// passwordRegex := regexp.MustCompile(`(<password>.{0,}<\/password>)`)
 	// s.servirtium.MaskResponseBody(map[*regexp.Regexp]string{passwordRegex: "<password>MASKED</password>"})
-
 	s.servirtium.StartRecord("http://climatedataapi.worldbank.org")
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.URL)
 	s.recordClient = *recordClient
