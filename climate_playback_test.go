@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	servirtium "github.com/servirtium/servirtium-go"
@@ -24,13 +25,14 @@ func (s *ClimateTestSuitePlayback) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
 	servirtium := servirtium.NewServirtium()
 	s.servirtium = servirtium
-	s.servirtium.StartPlayback(testName)
-	playbackClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerPlayback.URL)
+	go s.servirtium.StartPlayback(testName, 61418)
+	playbackClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerPlayback.Addr)
 	s.playbackClient = *playbackClient
 }
 
 func (s *ClimateTestSuitePlayback) AfterTest(suite, testName string) {
 	s.servirtium.EndPlayback()
+	time.Sleep(2 * time.Second)
 }
 
 func (s *ClimateTestSuitePlayback) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {

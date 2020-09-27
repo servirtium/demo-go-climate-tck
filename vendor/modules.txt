@@ -17,7 +17,9 @@ github.com/gorilla/mux
 github.com/leodido/go-urn
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/servirtium/servirtium-go v1.0.0
+# github.com/rs/cors v1.7.0
+github.com/rs/cors
+# github.com/servirtium/servirtium-go v1.1.0
 ## explicit
 github.com/servirtium/servirtium-go
 # github.com/shopspring/decimal v1.2.0
