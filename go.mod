@@ -1,4 +1,4 @@
-module github.com/tanphamhaiduong/climate_api
+module github.com/servirtium/go_climate_api
 
 go 1.14
 
