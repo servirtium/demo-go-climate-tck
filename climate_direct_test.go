@@ -22,7 +22,7 @@ func TestClimateTestSuiteDirect(t *testing.T) {
 
 func (s *ClimateTestSuiteDirect) SetupTest() {
 	validate := validator.New()
-	directClient := NewClient(http.DefaultClient, validate, "http://climatedataapi.worldbank.org")
+	directClient := NewClient(http.DefaultClient, validate, "http://worldbank-api-for-servirtium.local.gd:4567")
 	s.directClient = *directClient
 }
 
