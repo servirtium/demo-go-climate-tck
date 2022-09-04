@@ -56,8 +56,8 @@ func NewServirtium() *Impl {
 }
 
 // StartPlayback ...
-func (s *Impl) StartPlayback(recordFileName string, port int) {
-	s.initServerPlayback(recordFileName, port)
+func (s *Impl) StartPlayback(recordFileName string, servirtiumPort int) {
+	s.initServerPlaybackOnPort(recordFileName, servirtiumPort)
 	log.Fatal(s.ServerPlayback.ListenAndServe())
 }
 
@@ -66,26 +66,23 @@ func (s *Impl) EndPlayback() {
 	s.ServerPlayback.Shutdown(context.TODO())
 }
 
-func (s *Impl) initServerPlayback(recordFileName string, port int) {
-	if port == 0 {
-		port = 61417
-	}
-	s.initServerPlaybackOnPort(recordFileName, port)
+func (s *Impl) initServerPlayback(recordFileName string) {
+	s.initServerPlaybackOnPort(recordFileName, 61417)
 }
 
-func (s *Impl) initServerPlaybackOnPort(recordFileName string, port int) {
+func (s *Impl) initServerPlaybackOnPort(recordFileName string, servirtiumPort int) {
 	r := mux.NewRouter()
 	r.PathPrefix("/").HandlerFunc(s.playbackHandler(recordFileName))
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"},
+		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "OPTIONS", "OPTION", "DELETE", "PATCH"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
 		Debug:            false,
 	})
 	srv := &http.Server{
 		Handler: c.Handler(r),
-		Addr:    "127.0.0.1:" + strconv.Itoa(port),
+		Addr:    "127.0.0.1:" + strconv.Itoa(servirtiumPort),
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
@@ -194,8 +191,8 @@ func (s *Impl) playbackHandler(recordFileName string) func(w http.ResponseWriter
 }
 
 // StartRecord ...
-func (s *Impl) StartRecord(apiURL string, port int) {
-	s.initRecordServer(apiURL, port)
+func (s *Impl) StartRecord(apiURL string, servirtiumPort int) {
+	s.initRecordServerOnPort(apiURL, servirtiumPort)
 	log.Fatal(s.ServerRecord.ListenAndServe())
 }
 
@@ -221,14 +218,11 @@ func (s *Impl) EndRecord() {
 	s.ServerRecord.Shutdown(context.TODO())
 }
 
-func (s *Impl) initRecordServer(apiURL string, port int) {
-	if port == 0 {
-		port = 61417
-	}
-	s.initRecordServerOnPort(apiURL, port)
+func (s *Impl) initRecordServer(apiURL string) {
+	s.initRecordServerOnPort(apiURL, 61417)
 }
 
-func (s *Impl) initRecordServerOnPort(apiURL string, port int) {
+func (s *Impl) initRecordServerOnPort(apiURL string, servirtiumPort int) {
 	r := mux.NewRouter()
 	r.PathPrefix("/").HandlerFunc(s.recordHandler(apiURL))
 	c := cors.New(cors.Options{
@@ -240,7 +234,7 @@ func (s *Impl) initRecordServerOnPort(apiURL string, port int) {
 	})
 	srv := &http.Server{
 		Handler: c.Handler(r),
-		Addr:    "127.0.0.1:" + strconv.Itoa(port),
+		Addr:    "127.0.0.1:" + strconv.Itoa(servirtiumPort),
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

@@ -25,14 +25,14 @@ func (s *ClimateTestSuitePlayback) BeforeTest(suiteName, testName string) {
 	validate := validator.New()
 	servirtium := servirtium.NewServirtium()
 	s.servirtium = servirtium
-	go s.servirtium.StartPlayback(testName, 61418)
+	go s.servirtium.StartPlayback(testName, 61417)
 	playbackClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerPlayback.Addr)
 	s.playbackClient = *playbackClient
 }
 
 func (s *ClimateTestSuitePlayback) AfterTest(suite, testName string) {
 	s.servirtium.EndPlayback()
-	time.Sleep(2 * time.Second)
+	time.Sleep(4 * time.Second)
 }
 
 func (s *ClimateTestSuitePlayback) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {

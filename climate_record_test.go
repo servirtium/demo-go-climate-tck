@@ -32,7 +32,7 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 		regexp.MustCompile("Set-Cookie: (.*)"): "REPLACED-IN-RECORDING",
 		regexp.MustCompile("Date: (.*)"):       "Date: Tue, 04 Aug 2020 16:53:25 GMT",
 	})
-	go s.servirtium.StartRecord("http://climatedataapi.worldbank.org", 61417)
+	go s.servirtium.StartRecord("http://worldbank-api-for-servirtium.local.gd:4567", 61417)
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.Addr)
 	s.recordClient = *recordClient
 }
@@ -40,7 +40,7 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 func (s *ClimateTestSuiteRecord) AfterTest(suite, testName string) {
 	s.servirtium.WriteRecord(testName)
 	s.servirtium.EndRecord()
-	time.Sleep(2 * time.Second)
+	time.Sleep(4 * time.Second)
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
