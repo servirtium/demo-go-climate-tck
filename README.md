@@ -11,25 +11,25 @@ The build for this demo project needs that docker container running
 
 # climate_api
 
-## How to install vendor
+## How to install vendor modules
 
 Run command `make install`
 
-## How to run test
+## How to run tests
 
 Run command `make test`
 
-## How to run particular test record
+## How to run tests that directly use the web API
 
-Run commmand `make test_record`
+Run command `make test_direct`
 
-## How to run particular test playback
+## How to run tests that record the web API
 
-Run commmand `make test_playback`
+Run command `make test_record`
 
-## How to run particular test direct
+## How to run tests playback previously recorded web API
 
-Run commmand `make test_direct`
+Run command `make test_playback`
 
 ## View Test coverage
 
