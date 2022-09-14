@@ -16,8 +16,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rs/cors v1.8.2 h1:KCooALfAYGs415Cwu5ABvv9n9509fSiG5SQJn/AQo4U=
 github.com/rs/cors v1.8.2/go.mod h1:XyqrcTp5zjWr1wsJ8PIRZssZ8b/WMcMf71DJnit4EMU=
-github.com/servirtium/servirtium-go v1.1.1-0.20220904163634-56170b44e1d4 h1:4ZrzhN2qkO4YkApHUeNWJgyiEcamIqp5ul4Cvsq7bG0=
-github.com/servirtium/servirtium-go v1.1.1-0.20220904163634-56170b44e1d4/go.mod h1:7fno6Owp/hXACr67hXoala4+ihBZ2uzSKqgU+FMVDLk=
+github.com/servirtium/servirtium-go v1.1.2 h1:nz6fmoONw+Wk1Vv/ZPv6IzjLPwRQrFFdowmhkY6Nus4=
+github.com/servirtium/servirtium-go v1.1.2/go.mod h1:JpLcneZCFJRvTu2PyIfOTTYn3lLbSUB6RSSdtyXGRmE=
 github.com/shopspring/decimal v1.2.0 h1:abSATXmQEYyShuxI4/vyW3tV1MrKAJzCZ/0zLUXYbsQ=
 github.com/shopspring/decimal v1.2.0/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
