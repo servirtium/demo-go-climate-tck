@@ -70,7 +70,7 @@ There are 18 Jest tests in this technology compatibility kit (TCK) project that 
 * 6 tests that do the above, but also record the interactions via Servirtium
 * 6 tests that don't at all use WorldBank (or need to be online), but instead use the recordings in the above via Servirtium
 
-### Psuedocode for the 6 tests:
+### Pseudocode for the 6 tests:
 
 ```
 test_averageRainfallForGreatBritainFrom1980to1999Exists()
