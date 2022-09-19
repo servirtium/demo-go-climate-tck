@@ -2,14 +2,12 @@ package climate
 
 import (
 	"context"
-	"net/http"
-	"regexp"
-	"testing"
-	"time"
-
 	"github.com/go-playground/validator/v10"
 	servirtium "github.com/servirtium/servirtium-go"
 	"github.com/stretchr/testify/suite"
+	"net/http"
+	"regexp"
+	"testing"
 )
 
 type ClimateTestSuiteRecord struct {
@@ -41,7 +39,6 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 func (s *ClimateTestSuiteRecord) AfterTest(suite, testName string) {
 	s.servirtium.WriteRecord(testName)
 	s.servirtium.EndRecord()
-	time.Sleep(4 * time.Second)
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {

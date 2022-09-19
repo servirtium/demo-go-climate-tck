@@ -2,13 +2,11 @@ package climate
 
 import (
 	"context"
-	"net/http"
-	"testing"
-	"time"
-
 	"github.com/go-playground/validator/v10"
 	servirtium "github.com/servirtium/servirtium-go"
 	"github.com/stretchr/testify/suite"
+	"net/http"
+	"testing"
 )
 
 type ClimateTestSuitePlayback struct {
@@ -32,7 +30,6 @@ func (s *ClimateTestSuitePlayback) BeforeTest(suiteName, testName string) {
 
 func (s *ClimateTestSuitePlayback) AfterTest(suite, testName string) {
 	s.servirtium.EndPlayback()
-	time.Sleep(4 * time.Second)
 }
 
 func (s *ClimateTestSuitePlayback) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {
