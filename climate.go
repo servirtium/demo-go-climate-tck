@@ -119,7 +119,7 @@ func (c *ClientImpl) GetAnnualRainfall(ctx context.Context, args GetAnnualRainfa
 		return List{}, err
 	}
 	list := List{}
-	if _, err = c.Do(r, &list); err != nil {
+	if _, err := c.Do(r, &list); err != nil {
 		return List{}, err
 	}
 	return list, nil
