@@ -64,7 +64,7 @@ Run command `make clean`
 
 Run command `make test`
 
-There are 18 Jest tests in this technology compatibility kit (TCK) project that serves as a demo.
+There are 18 "Testing" tests in this technology compatibility kit (TCK) project that serves as a demo.
 
 * 6 tests that don't use Servirtium and directly invoke services on WorldBank.com's climate endpoint.
 * 6 tests that do the above, but also record the interactions via Servirtium
@@ -100,19 +100,69 @@ As mentioned, these six are repeated three times in this test-base: six direct, 
 
 Command: `make test_direct`
 
-TODO pic
+```
+$ make test_direct 
+=== RUN   TestClimateTestSuiteDirect
+=== RUN   TestClimateTestSuiteDirect/TestAverageRainfallForEgyptFrom1980to1999Exists
+=== RUN   TestClimateTestSuiteDirect/TestAverageRainfallForFranceFrom1980to1999Exists
+=== RUN   TestClimateTestSuiteDirect/TestAverageRainfallForGreatBritainFrom1980to1999Exists
+=== RUN   TestClimateTestSuiteDirect/TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist
+=== RUN   TestClimateTestSuiteDirect/TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist
+--- PASS: TestClimateTestSuiteDirect (0.07s)
+    --- PASS: TestClimateTestSuiteDirect/TestAverageRainfallForEgyptFrom1980to1999Exists (0.01s)
+    --- PASS: TestClimateTestSuiteDirect/TestAverageRainfallForFranceFrom1980to1999Exists (0.01s)
+    --- PASS: TestClimateTestSuiteDirect/TestAverageRainfallForGreatBritainFrom1980to1999Exists (0.00s)
+    --- PASS: TestClimateTestSuiteDirect/TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist (0.04s)
+    --- PASS: TestClimateTestSuiteDirect/TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist (0.00s)
+PASS
+ok  	go_climate_api	0.292s
+```
 
 ## Running the 6 tests in record-mode only:
 
 Command: `make test_record`
 
-TODO pic
+```
+$ make test_record 
+=== RUN   TestClimateTestSuiteRecord
+=== RUN   TestClimateTestSuiteRecord/TestAverageRainfallForEgyptFrom1980to1999Exists
+=== RUN   TestClimateTestSuiteRecord/TestAverageRainfallForFranceFrom1980to1999Exists
+=== RUN   TestClimateTestSuiteRecord/TestAverageRainfallForGreatBritainAndFranceFrom1980to1999Exists
+=== RUN   TestClimateTestSuiteRecord/TestAverageRainfallForGreatBritainFrom1980to1999Exists
+=== RUN   TestClimateTestSuiteRecord/TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist
+=== RUN   TestClimateTestSuiteRecord/TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist
+--- PASS: TestClimateTestSuiteRecord (0.13s)
+    --- PASS: TestClimateTestSuiteRecord/TestAverageRainfallForEgyptFrom1980to1999Exists (0.03s)
+    --- PASS: TestClimateTestSuiteRecord/TestAverageRainfallForFranceFrom1980to1999Exists (0.01s)
+    --- PASS: TestClimateTestSuiteRecord/TestAverageRainfallForGreatBritainAndFranceFrom1980to1999Exists (0.02s)
+    --- PASS: TestClimateTestSuiteRecord/TestAverageRainfallForGreatBritainFrom1980to1999Exists (0.01s)
+    --- PASS: TestClimateTestSuiteRecord/TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist (0.05s)
+    --- PASS: TestClimateTestSuiteRecord/TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist (0.01s)
+PASS
+ok  	go_climate_api	0.334s
+```
 
 ## Running the 6 tests in playback-mode only:
 
 Command: `make test_playback`
 
-TODO pic
+``` 
+$ make test_playback 
+=== RUN   TestClimateTestSuitePlayback
+=== RUN   TestClimateTestSuitePlayback/TestAverageRainfallForEgyptFrom1980to1999Exists
+=== RUN   TestClimateTestSuitePlayback/TestAverageRainfallForFranceFrom1980to1999Exists
+=== RUN   TestClimateTestSuitePlayback/TestAverageRainfallForGreatBritainFrom1980to1999Exists
+=== RUN   TestClimateTestSuitePlayback/TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist
+=== RUN   TestClimateTestSuitePlayback/TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist
+--- PASS: TestClimateTestSuitePlayback (0.03s)
+    --- PASS: TestClimateTestSuitePlayback/TestAverageRainfallForEgyptFrom1980to1999Exists (0.02s)
+    --- PASS: TestClimateTestSuitePlayback/TestAverageRainfallForFranceFrom1980to1999Exists (0.00s)
+    --- PASS: TestClimateTestSuitePlayback/TestAverageRainfallForGreatBritainFrom1980to1999Exists (0.00s)
+    --- PASS: TestClimateTestSuitePlayback/TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist (0.00s)
+    --- PASS: TestClimateTestSuitePlayback/TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist (0.00s)
+PASS
+ok  	go_climate_api	0.245s
+```
 
 Note the playback mode is quickest. Your day to dey development of you main applications functionality would rely on this mode of operation. 
 
