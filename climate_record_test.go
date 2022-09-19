@@ -33,7 +33,7 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 		regexp.MustCompile("Date: (.*)"):       "Date: Tue, 04 Aug 2020 16:53:25 GMT",
 	})
 	s.servirtium.StartRecord("http://worldbank-api-for-servirtium.local.gd:4567", 61417)
-	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.Addr)
+	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.GetRecordURL())
 	s.recordClient = *recordClient
 }
 
