@@ -32,7 +32,7 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 		regexp.MustCompile("Set-Cookie: (.*)"): "REPLACED-IN-RECORDING",
 		regexp.MustCompile("Date: (.*)"):       "Date: Tue, 04 Aug 2020 16:53:25 GMT",
 	})
-	go s.servirtium.StartRecord("http://worldbank-api-for-servirtium.local.gd:4567", 61417)
+	s.servirtium.StartRecord("http://worldbank-api-for-servirtium.local.gd:4567", 61417)
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.ServerRecord.Addr)
 	s.recordClient = *recordClient
 }
