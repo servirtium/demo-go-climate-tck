@@ -22,7 +22,6 @@ Connection: Keep-Alive
 Content-Length: 3221
 Content-Type: application/xml;charset=utf-8
 Date: Tue, 04 Aug 2020 16:53:25 GMT
-For_testing: 7388eed9-1818-4d12-991f-518812d794ad
 Last-Modified: Tue, 16 Aug 2022 20:58:48 GMT
 Server: WEBrick/1.6.1 (Ruby/2.7.4/2021-07-07)
 X-Content-Type-Options: nosniff

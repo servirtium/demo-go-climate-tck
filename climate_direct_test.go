@@ -6,14 +6,12 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
-	servirtium "github.com/servirtium/servirtium-go"
 	"github.com/stretchr/testify/suite"
 )
 
 type ClimateTestSuiteDirect struct {
 	directClient ClientImpl
 	suite.Suite
-	servirtium *servirtium.Impl
 }
 
 func TestClimateTestSuiteDirect(t *testing.T) {

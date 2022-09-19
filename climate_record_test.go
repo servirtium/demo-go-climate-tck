@@ -28,6 +28,7 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 	s.servirtium.SetCallerRequestHeaderReplacements(map[*regexp.Regexp]string{
 		regexp.MustCompile("User-Agent: (.*)"): "User-Agent: Servirtium-Agent",
 	})
+	s.servirtium.SetRecordResponseHeadersRemoval([]string{"For_testing"})
 	s.servirtium.SetRecordResponseHeaderReplacements(map[*regexp.Regexp]string{
 		regexp.MustCompile("Set-Cookie: (.*)"): "REPLACED-IN-RECORDING",
 		regexp.MustCompile("Date: (.*)"):       "Date: Tue, 04 Aug 2020 16:53:25 GMT",

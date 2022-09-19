@@ -22,7 +22,6 @@ Connection: Keep-Alive
 Content-Length: 3221
 Content-Type: application/xml;charset=utf-8
 Date: Tue, 04 Aug 2020 16:53:25 GMT
-For_testing: df2baa86-6af8-413e-a895-1e247b3b02fc
 Last-Modified: Tue, 16 Aug 2022 20:58:48 GMT
 Server: WEBrick/1.6.1 (Ruby/2.7.4/2021-07-07)
 X-Content-Type-Options: nosniff
@@ -62,7 +61,6 @@ Connection: Keep-Alive
 Content-Length: 3226
 Content-Type: application/xml;charset=utf-8
 Date: Tue, 04 Aug 2020 16:53:25 GMT
-For_testing: 42fa8d14-7e48-46ba-b9f7-aa05805c84db
 Last-Modified: Tue, 16 Aug 2022 20:58:48 GMT
 Server: WEBrick/1.6.1 (Ruby/2.7.4/2021-07-07)
 X-Content-Type-Options: nosniff
