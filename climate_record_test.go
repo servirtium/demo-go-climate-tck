@@ -31,7 +31,7 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 		regexp.MustCompile("Set-Cookie: (.*)"): "REPLACED-IN-RECORDING",
 		regexp.MustCompile("Date: (.*)"):       "Date: Tue, 04 Aug 2020 16:53:25 GMT",
 	})
-	s.servirtium.StartRecord("http://worldbank-api-for-servirtium.local.gd:4567", 61417)
+	s.servirtium.StartRecord("https://servirtium.github.io/worldbank-climate-recordings", 61417)
 	recordClient := NewClient(http.DefaultClient, validate, s.servirtium.GetRecordURL())
 	s.recordClient = *recordClient
 }
@@ -93,14 +93,10 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForMiddleEarthFrom1980to1999
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainAndFranceFrom1980to1999Exists() {
 	var (
-		ctx       = context.Background()
-		expected1 = float64(988.8454972331014)
-		expected2 = 913.7986955122727
+		ctx      = context.Background()
+		expected = float64(1902.644192745374)
 	)
-	record1Result, record1Err := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "gbr")
-	s.Equal(expected1, record1Result)
-	s.Nil(record1Err)
-	record2Result, record2Err := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "fra")
-	s.Equal(expected2, record2Result)
-	s.Nil(record2Err)
+	recordResult, recordErr := s.recordClient.GetAveAnnualRainfallMany(ctx, 1980, 1999, "gbr", "fra")
+	s.Equal(expected, recordResult)
+	s.Nil(recordErr)
 }

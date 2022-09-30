@@ -81,3 +81,13 @@ func (s *ClimateTestSuitePlayback) TestAverageRainfallForMiddleEarthFrom1980to19
 	s.Equal(expected, playbackResult)
 	s.Error(playbackErr)
 }
+
+func (s *ClimateTestSuitePlayback) TestAverageRainfallForGreatBritainAndFranceFrom1980to1999Exists() {
+	var (
+		ctx      = context.Background()
+		expected = float64(1902.644192745374)
+	)
+	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfallMany(ctx, 1980, 1999, "gbr", "fra")
+	s.Equal(expected, playbackResult)
+	s.Nil(playbackErr)
+}

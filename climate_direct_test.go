@@ -20,7 +20,7 @@ func TestClimateTestSuiteDirect(t *testing.T) {
 
 func (s *ClimateTestSuiteDirect) SetupTest() {
 	validate := validator.New()
-	directClient := NewClient(http.DefaultClient, validate, "http://worldbank-api-for-servirtium.local.gd:4567")
+	directClient := NewClient(http.DefaultClient, validate, "https://servirtium.github.io/worldbank-climate-recordings")
 	s.directClient = *directClient
 }
 
@@ -72,4 +72,14 @@ func (s *ClimateTestSuiteDirect) TestAverageRainfallForMiddleEarthFrom1980to1999
 	directResult, directErr := s.directClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
 	s.Equal(expected, directResult)
 	s.Error(directErr)
+}
+
+func (s *ClimateTestSuiteDirect) TestAverageRainfallForGreatBritainAndFranceFrom1980to1999Exists() {
+	var (
+		ctx      = context.Background()
+		expected = float64(1902.644192745374)
+	)
+	recordResult, recordErr := s.directClient.GetAveAnnualRainfallMany(ctx, 1980, 1999, "gbr", "fra")
+	s.Equal(expected, recordResult)
+	s.Nil(recordErr)
 }

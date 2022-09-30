@@ -5,11 +5,10 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/shopspring/decimal"
+	"net/http"
+	"strings"
 )
 
 // IClient interface
@@ -142,6 +141,18 @@ func (c *ClientImpl) calculateAveAnual(list List, fromCCYY, toCCYY int64) (decim
 	}
 	anualAve := totalAnualData.Div(totalDatumDec)
 	return anualAve, nil
+}
+
+func (c *ClientImpl) GetAveAnnualRainfallMany(ctx context.Context, fromCCYY int64, toCCYY int64, countryISOs ...string) (float64, error) {
+	var total = float64(0)
+	for _, country := range countryISOs {
+		result, err := c.GetAveAnnualRainfall(ctx, fromCCYY, toCCYY, country)
+		if err != nil {
+			return -1, err
+		}
+		total += result
+	}
+	return total, nil
 }
 
 // GetAveAnnualRainfall ...
