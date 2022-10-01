@@ -128,23 +128,23 @@ func (c *ClientImpl) GetAnnualRainfall(ctx context.Context, args GetAnnualRainfa
 	return list, nil
 }
 
-func (c *ClientImpl) calculateAveAnual(list List, fromCCYY, toCCYY int64) (decimal.Decimal, error) {
+func (c *ClientImpl) calculateAveAnnual(list List, fromCCYY, toCCYY int64) (decimal.Decimal, error) {
 	domainWebAnnualGcmDatum := list.DomainWebAnnualGcmDatum
-	totalAnualData := decimal.NewFromInt(0)
+	totalAnnualData := decimal.NewFromInt(0)
 	totalDatum := int64(len(domainWebAnnualGcmDatum))
 	if totalDatum < 1 {
 		return decimal.NewFromInt(0), fmt.Errorf("date range %d-%d not supported", fromCCYY, toCCYY)
 	}
 	totalDatumDec := decimal.NewFromInt(totalDatum)
 	for _, v := range domainWebAnnualGcmDatum {
-		anualData, err := decimal.NewFromString(v.AnnualData.Double)
+		annualData, err := decimal.NewFromString(v.AnnualData.Double)
 		if err != nil {
 			continue
 		}
-		totalAnualData = totalAnualData.Add(anualData)
+		totalAnnualData = totalAnnualData.Add(annualData)
 	}
-	anualAve := totalAnualData.Div(totalDatumDec)
-	return anualAve, nil
+	annualAve := totalAnnualData.Div(totalDatumDec)
+	return annualAve, nil
 }
 
 func (c *ClientImpl) GetAveAnnualRainfallMany(ctx context.Context, fromCCYY int64, toCCYY int64, countryISOs ...string) (float64, error) {
@@ -170,10 +170,10 @@ func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, t
 	if err != nil {
 		return -1, err
 	}
-	anualAve, err := c.calculateAveAnual(list, fromCCYY, toCCYY)
+	annualAve, err := c.calculateAveAnnual(list, fromCCYY, toCCYY)
 	if err != nil {
 		return -1, err
 	}
-	result, _ := anualAve.Float64()
+	result, _ := annualAve.Float64()
 	return result, nil
 }
