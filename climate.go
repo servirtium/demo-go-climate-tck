@@ -1,12 +1,14 @@
 package climate
 
 import (
+	"bytes"
 	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/shopspring/decimal"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -69,7 +71,9 @@ func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) 
 		_ = resp.Body.Close()
 	}()
 	if v != nil {
-		if err = xml.NewDecoder(resp.Body).Decode(v); err != nil {
+		body := resp.Body
+		b, err := ioutil.ReadAll(body)
+		if err = xml.NewDecoder(bytes.NewReader(b)).Decode(v); err != nil {
 			return nil, fmt.Errorf("unable to parse XML [%s %s]: %v", r.Method, r.URL.RequestURI(), err)
 		}
 	}
@@ -164,11 +168,11 @@ func (c *ClientImpl) GetAveAnnualRainfall(ctx context.Context, fromCCYY int64, t
 	}
 	list, err := c.GetAnnualRainfall(ctx, args)
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 	anualAve, err := c.calculateAveAnual(list, fromCCYY, toCCYY)
 	if err != nil {
-		return 0, err
+		return -1, err
 	}
 	result, _ := anualAve.Float64()
 	return result, nil

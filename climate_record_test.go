@@ -47,8 +47,8 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1980to199
 		expected = float64(988.8454972331014)
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "gbr")
-	s.Equal(expected, recordResult)
 	s.Nil(recordErr)
+	s.Equal(expected, recordResult)
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForFranceFrom1980to1999Exists() {
@@ -57,8 +57,8 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForFranceFrom1980to1999Exist
 		expected = 913.7986955122727
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "fra")
-	s.Equal(expected, recordResult)
 	s.Nil(recordErr)
+	s.Equal(expected, recordResult)
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForEgyptFrom1980to1999Exists() {
@@ -67,8 +67,8 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForEgyptFrom1980to1999Exists
 		expected = float64(54.58587712129825)
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "egy")
-	s.Equal(expected, recordResult)
 	s.Nil(recordErr)
+	s.Equal(expected, recordResult)
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
@@ -77,8 +77,8 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1985to199
 		expected = float64(0)
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
-	s.Equal(expected, recordResult)
 	s.Error(recordErr)
+	s.Equal(expected, recordResult)
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
@@ -87,8 +87,8 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForMiddleEarthFrom1980to1999
 		expected = float64(0)
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
-	s.Equal(expected, recordResult)
 	s.Error(recordErr)
+	s.Equal(expected, recordResult)
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainAndFranceFrom1980to1999Exists() {
@@ -97,6 +97,6 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainAndFranceFrom
 		expected = float64(1902.644192745374)
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfallMany(ctx, 1980, 1999, "gbr", "fra")
-	s.Equal(expected, recordResult)
 	s.Nil(recordErr)
+	s.Equal(expected, recordResult)
 }
