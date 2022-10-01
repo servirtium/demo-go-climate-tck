@@ -65,7 +65,7 @@ func (s *ClimateTestSuitePlayback) TestAverageRainfallForEgyptFrom1980to1999Exis
 func (s *ClimateTestSuitePlayback) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
 	var (
 		ctx      = context.Background()
-		expected = float64(0)
+		expected = float64(-1)
 	)
 	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
 	s.Equal(expected, playbackResult)
@@ -75,7 +75,7 @@ func (s *ClimateTestSuitePlayback) TestAverageRainfallForGreatBritainFrom1985to1
 func (s *ClimateTestSuitePlayback) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
 	var (
 		ctx      = context.Background()
-		expected = float64(0)
+		expected = float64(-1)
 	)
 	playbackResult, playbackErr := s.playbackClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
 	s.Equal(expected, playbackResult)

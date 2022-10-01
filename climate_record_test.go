@@ -74,7 +74,7 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForEgyptFrom1980to1999Exists
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
 	var (
 		ctx      = context.Background()
-		expected = float64(0)
+		expected = float64(-1)
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
 	s.Error(recordErr)
@@ -84,7 +84,7 @@ func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1985to199
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
 	var (
 		ctx      = context.Background()
-		expected = float64(0)
+		expected = float64(-1)
 	)
 	recordResult, recordErr := s.recordClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
 	s.Error(recordErr)
