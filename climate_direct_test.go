@@ -57,7 +57,7 @@ func (s *ClimateTestSuiteDirect) TestAverageRainfallForEgyptFrom1980to1999Exists
 func (s *ClimateTestSuiteDirect) TestAverageRainfallForGreatBritainFrom1985to1995DoesNotExist() {
 	var (
 		ctx      = context.Background()
-		expected = float64(0)
+		expected = float64(-1)
 	)
 	directResult, directErr := s.directClient.GetAveAnnualRainfall(ctx, 1985, 1995, "gbr")
 	s.Equal(expected, directResult)
@@ -67,7 +67,7 @@ func (s *ClimateTestSuiteDirect) TestAverageRainfallForGreatBritainFrom1985to199
 func (s *ClimateTestSuiteDirect) TestAverageRainfallForMiddleEarthFrom1980to1999DoesNotExist() {
 	var (
 		ctx      = context.Background()
-		expected = float64(0)
+		expected = float64(-1)
 	)
 	directResult, directErr := s.directClient.GetAveAnnualRainfall(ctx, 1980, 1999, "mde")
 	s.Equal(expected, directResult)
