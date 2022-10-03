@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/go-playground/validator/v10 v10.3.0
-	github.com/servirtium/servirtium-go v1.1.7-0.20221002192326-5926d65f7f81
+	github.com/servirtium/servirtium-go v1.1.7-0.20221003071058-9cd8a6e02d78
 	github.com/shopspring/decimal v1.2.0
 	github.com/stretchr/testify v1.6.1
 )
