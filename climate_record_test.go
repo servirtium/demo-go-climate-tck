@@ -2,10 +2,12 @@ package climate
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	servirtium "github.com/servirtium/servirtium-go"
 	"github.com/stretchr/testify/suite"
 	"net/http"
+	"os"
 	"regexp"
 	"testing"
 )
@@ -39,6 +41,10 @@ func (s *ClimateTestSuiteRecord) BeforeTest(suiteName, testName string) {
 func (s *ClimateTestSuiteRecord) AfterTest(suite, testName string) {
 	s.servirtium.WriteRecord(testName)
 	s.servirtium.EndRecord()
+	err := s.servirtium.GetLastError()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Last error encountered by servirtium: %s", err)
+	}
 }
 
 func (s *ClimateTestSuiteRecord) TestAverageRainfallForGreatBritainFrom1980to1999Exists() {

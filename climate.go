@@ -1,14 +1,14 @@
 package climate
 
 import (
-	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/shopspring/decimal"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -71,9 +71,15 @@ func (c *ClientImpl) Do(r *http.Request, v interface{}) (*http.Response, error) 
 		_ = resp.Body.Close()
 	}()
 	if v != nil {
-		body := resp.Body
-		b, err := ioutil.ReadAll(body)
-		if err = xml.NewDecoder(bytes.NewReader(b)).Decode(v); err != nil {
+		var rspReader io.ReadCloser
+		switch resp.Header.Get("Content-Encoding") {
+		case "gzip":
+			rspReader, _ = gzip.NewReader(resp.Body)
+		default:
+			rspReader = resp.Body
+		}
+		//		respReader, err := io.ReadAll(rspReader)
+		if err = xml.NewDecoder(rspReader).Decode(v); err != nil {
 			return nil, fmt.Errorf("unable to parse XML [%s %s]: %v", r.Method, r.URL.RequestURI(), err)
 		}
 	}
